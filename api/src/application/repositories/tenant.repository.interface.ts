@@ -8,6 +8,7 @@ export interface ITenantRepository {
     findById(id: string): Promise<Tenant | null>;
     findByName(name: string): Promise<Tenant | null>;
     findByAlias(alias: string): Promise<Tenant | null>;
+    findByBillingContact(billingContact: string): Promise<Tenant | null>;
     update(id: string, dto: UpdateTenantDto): Promise<Tenant | null>;
     delete(id: string): Promise<boolean>;
 }

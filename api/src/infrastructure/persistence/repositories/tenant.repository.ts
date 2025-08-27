@@ -35,6 +35,10 @@ export class TenantRepository implements ITenantRepository {
         return this.ormRepository.findOne({ where: { alias } });
     }
 
+    async findByBillingContact(billingContact: string): Promise<Tenant | null> {
+        return this.ormRepository.findOne({ where: { billingContact } });
+    }
+
     async update(id: string, dto: UpdateTenantDto): Promise<Tenant | null> {
         const updateData = { ...dto };
 

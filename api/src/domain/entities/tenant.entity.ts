@@ -12,6 +12,9 @@ export class Tenant {
     @Column({ length: 50, unique: true })
     alias: string;
 
+    @Column({ type: 'varchar', unique: true })
+    billingContact: string;
+
     @OneToMany(() => User, (user) => user.tenant)
     users?: User[];
 }

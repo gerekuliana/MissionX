@@ -136,6 +136,7 @@ async function createDefaultTenants(app: INestApplication, logger: Logger): Prom
             tenant = await tenantCommands.createTenant({
                 name: item.tenantName,
                 alias: item.tenantAlias,
+                billingContact: `${item.adminFirstName} ${item.adminLastName} - ${item.adminEmail}`,
             });
 
             await userCommands.createUser(

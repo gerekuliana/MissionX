@@ -19,4 +19,10 @@ export class TenantDto {
         example: 'acme-corp',
     })
     alias: string;
+
+    @ApiProperty({
+        description: 'Billing contact information for the tenant',
+        example: 'John Doe - john@acme.com',
+    })
+    billingContact: string;
 }

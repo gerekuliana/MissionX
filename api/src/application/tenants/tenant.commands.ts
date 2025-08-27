@@ -19,6 +19,7 @@ export class TenantCommands implements ITenantCommands {
         dto.id = tenant.id;
         dto.name = tenant.name;
         dto.alias = tenant.alias;
+        dto.billingContact = tenant.billingContact;
 
         return dto;
     }
@@ -28,6 +29,14 @@ export class TenantCommands implements ITenantCommands {
 
         if (existingByAlias) {
             throw new BadRequestException('Tenant alias already exists.');
+        }
+
+        const existingByBillingContact = await this.tenantRepository.findByBillingContact(
+            dto.billingContact,
+        );
+
+        if (existingByBillingContact) {
+            throw new BadRequestException('Billing contact already exists.');
         }
 
         const createdTenant = await this.tenantRepository.create(dto);
