@@ -4,6 +4,7 @@ import axios from 'axios';
 export type CreateTenantInput = {
   name: string;
   alias: string;
+  billingContact: string;
 };
 
 export type UpdateTenantInput = {

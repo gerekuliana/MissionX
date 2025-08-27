@@ -28,4 +28,12 @@ export class CreateTenantDto {
         message: 'Alias must be lowercase alphanumeric with hyphens and no leading/trailing hyphen',
     })
     alias: string;
+
+    @ApiProperty({
+        description: 'Billing contact information for the tenant',
+        example: 'John Doe - john@acme.com',
+    })
+    @IsNotEmpty()
+    @IsString()
+    billingContact: string;
 }

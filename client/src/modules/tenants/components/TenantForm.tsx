@@ -21,6 +21,7 @@ type TenantFormProps = {
 type TenantFormValues = {
   name: string;
   alias: string;
+  billingContact: string;
 };
 
 const TenantSchema = Yup.object().shape({
@@ -31,6 +32,7 @@ const TenantSchema = Yup.object().shape({
       message: 'Alias must be lowercase alphanumeric with hyphens (no leading/trailing)',
     })
     .required('Required'),
+  billingContact: Yup.string().required('Required'),
 });
 
 const TenantForm: React.FC<TenantFormProps> = ({ tenant, onClose }) => {
@@ -71,6 +73,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ tenant, onClose }) => {
     (): TenantFormValues => ({
       name: tenant?.name ?? '',
       alias: tenant?.alias ?? '',
+      billingContact: tenant?.billingContact ?? '',
     }),
     [tenant],
   );
@@ -80,7 +83,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ tenant, onClose }) => {
       const updateData: UpdateTenantInput = { name: values.name };
       await updateTenantMutate({ id: tenant.id, data: updateData });
     } else {
-      const createPayload: CreateTenantInput = { name: values.name, alias: values.alias };
+      const createPayload: CreateTenantInput = { name: values.name, alias: values.alias, billingContact: values.billingContact };
       await addTenantMutate(createPayload);
     }
   };
@@ -115,6 +118,17 @@ const TenantForm: React.FC<TenantFormProps> = ({ tenant, onClose }) => {
                 disabled={!!tenant}
                 error={touched.alias && !!errors.alias}
                 helperText={touched.alias && errors.alias}
+              />
+              <Field
+                as={TextField}
+                name="billingContact"
+                label="Billing Contact"
+                variant="outlined"
+                fullWidth
+                required
+                disabled={!!tenant}
+                error={touched.billingContact && !!errors.billingContact}
+                helperText={touched.billingContact && errors.billingContact}
               />
 
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 3 }}>
