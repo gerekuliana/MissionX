@@ -23,6 +23,7 @@ import CustomUserButton from './CustomUserButton';
 import useUserRoles from '../hooks/useUserRoles';
 import { ROLES } from '../constants/roles';
 import InvoiceFileUpload from '../../modules/invoices/components/InvoiceFileUpload';
+import ThemeSwitcher from './ThemeSwitcher';
 
 const drawerWidth = 240;
 
@@ -150,6 +151,10 @@ const MainLayout: React.FC = () => {
                   {item.label}
                 </Button>
               ))}
+            </Box>
+
+            <Box sx={{ mr: 2 }}>
+              <ThemeSwitcher />
             </Box>
 
             <Box sx={{ ml: { xs: 1, md: 2 } }}>
