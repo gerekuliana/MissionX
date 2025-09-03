@@ -17,6 +17,7 @@ export class TenantQueries implements ITenantQueries {
         dto.id = tenant.id;
         dto.name = tenant.name;
         dto.alias = tenant.alias;
+        dto.billingContact = tenant.billingContact;
 
         return dto;
     }
