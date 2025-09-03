@@ -6,14 +6,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   IconButton,
   Tooltip,
   TablePagination,
   Typography,
   Box,
-  TextField,
-  InputAdornment,
   Dialog,
   DialogActions,
   DialogContent,
@@ -27,7 +24,6 @@ import {
 import {
   Visibility as ViewIcon,
   Delete as DeleteIcon,
-  Search as SearchIcon,
 } from '@mui/icons-material';
 import { Invoice } from '../types/invoice';
 import { useDeleteInvoice } from '../invoiceMutations';
@@ -38,13 +34,13 @@ import { PaginatedResponseDto } from '../services/invoiceService';
 // Define the pulse animation
 const pulseAnimation = keyframes`
   0% {
-    background-color: rgba(31, 184, 170, 0);
+    background-color: rgba(17, 24, 39, 0);
   }
   50% {
-    background-color: rgba(31, 184, 170, 0.3);
+    background-color: rgba(17, 24, 39, 0.1);
   }
   100% {
-    background-color: rgba(31, 184, 170, 0);
+    background-color: rgba(17, 24, 39, 0);
   }
 `;
 
@@ -53,8 +49,6 @@ interface InvoiceTableProps {
   isLoading: boolean;
   onViewInvoice: (id: string) => void;
   highlightedInvoiceId: string | null;
-  searchTerm: string;
-  onSearchChange: (term: string) => void;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rowsPerPage: number) => void;
 }
@@ -67,8 +61,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
   isLoading,
   onViewInvoice,
   highlightedInvoiceId,
-  searchTerm,
-  onSearchChange,
   onPageChange,
   onRowsPerPageChange,
 }) => {
@@ -91,10 +83,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
     const newRowsPerPage = parseInt(event.target.value, 10);
     onRowsPerPageChange(newRowsPerPage);
     onPageChange(1); // Reset to first page
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchChange(event.target.value);
   };
 
   const handleDeleteClick = (id: string) => {
@@ -163,34 +151,18 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
 
   return (
     <>
-      <Box mb={2}>
-        <TextField
-          fullWidth
-          placeholder="Search invoices by number, vendor or customer name..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          variant="outlined"
-          size="small"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-
-      <TableContainer
-        component={Paper}
-        sx={{
-          backgroundColor: 'background.paper',
-          borderRadius: 2,
-          boxShadow: 1,
-        }}>
-        <Table aria-label="invoice table">
+      <TableContainer>
+        <Table stickyHeader aria-label="invoice table">
           <TableHead>
-            <TableRow>
+            <TableRow
+              sx={{
+                '& th': {
+                  backgroundColor: theme => theme.palette.action.hover,
+                  color: theme => theme.palette.text.secondary,
+                  fontWeight: 'bold',
+                  borderBottom: theme => `1px solid ${theme.palette.divider}`,
+                },
+              }}>
               <TableCell>Invoice #</TableCell>
               <TableCell>Vendor</TableCell>
               <TableCell>Customer</TableCell>
@@ -201,7 +173,20 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody
+            sx={{
+              '& tr': {
+                '&:hover': {},
+              },
+              '& td, & th': {
+                color: theme => theme.palette.text.primary,
+                borderBottom: theme => `1px solid ${theme.palette.divider}`,
+                py: 1,
+              },
+              '& tr:last-child td, & tr:last-child th': {
+                borderBottom: 0,
+              },
+            }}>
             {isLoading ? (
               // Loading skeletons
               Array.from(new Array(5)).map((_, index) => (
@@ -265,8 +250,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} align="center">
-                  {searchTerm ? 'No invoices found matching your search.' : 'No invoices found.'}
+                <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                  No invoices found.
                 </TableCell>
               </TableRow>
             )}

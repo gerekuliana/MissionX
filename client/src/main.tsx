@@ -1,13 +1,13 @@
-import React, { StrictMode } from 'react';
+import React, { StrictMode, useEffect } from 'react';
 import { SnackbarProvider } from 'notistack';
 import axios from 'axios';
 import { createRoot } from 'react-dom/client';
 import './styles/global.css';
 import App from './App.tsx';
-import { ClerkProvider } from '@clerk/clerk-react';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ClerkProvider, useAuth } from '@clerk/clerk-react';
+import { CssBaseline } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import clerkInstance from './common/services/clerkInstance.ts';
+import { ThemeProvider } from './themes/ThemeContext';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -16,213 +16,75 @@ if (!PUBLISHABLE_KEY) {
 }
 
 axios.defaults.baseURL = `${import.meta.env.VITE_API_URL}/api`;
-axios.interceptors.request.use(
-  async (config) => {
-    try {
-      if (clerkInstance) {
-        const token = await clerkInstance.session?.getToken();
 
-        if (token) {
-          config.headers.Authorization = token;
+// Component to setup axios interceptor with Clerk context
+export const AxiosInterceptorSetup: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { getToken } = useAuth();
+
+  useEffect(() => {
+    const requestInterceptor = axios.interceptors.request.use(
+      async (config) => {
+        try {
+          const token = await getToken();
+          if (token) {
+            config.headers.Authorization = `${token}`;
+          }
+        } catch (error) {
+          console.error('Error getting auth token:', error);
         }
-      }
-    } catch (error) {
-      console.error('Error getting auth token:', error);
-    }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
 
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        // Filter out expected GitHub authentication errors
+        const isGitHubAuthError =
+          error?.config?.url?.includes('/auth/git/github/repositories') &&
+          error?.response?.status === 400;
+
+        if (!isGitHubAuthError) {
+          // Log other errors
+          console.error('API Error:', error);
+        }
+
+        return Promise.reject(error);
+      },
+    );
+
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+      axios.interceptors.response.eject(responseInterceptor);
+    };
+  }, [getToken]);
+
+  return <>{children}</>;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-    },
-  },
-});
-
-// Custom theme with invoice analytics design system
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#1fb8aa',
-      light: '#3fc9bc',
-      dark: '#0d9488',
-      contrastText: '#000000',
-    },
-    secondary: {
-      main: '#06b6d4',
-      light: '#22d3f1',
-      dark: '#0e7490',
-      contrastText: '#000000',
-    },
-    background: {
-      default: '#0F172A', // Slate-900
-      paper: '#1E293B', // Slate-800
-    },
-    text: {
-      primary: '#FFFFFF',
-      secondary: '#94A3B8', // Slate-400
-    },
-    error: {
-      main: '#EF4444', // Red-500
-    },
-    warning: {
-      main: '#F59E0B', // Amber-500
-    },
-    info: {
-      main: '#3B82F6', // Blue-500
-    },
-    success: {
-      main: '#10B981', // Emerald-500
-    },
-    divider: '#334155', // Slate-700
-  },
-  typography: {
-    fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
-    h1: {
-      fontWeight: 700,
-    },
-    h2: {
-      fontWeight: 700,
-    },
-    h3: {
-      fontWeight: 600,
-    },
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 600,
-    },
-    button: {
-      fontWeight: 600,
-      textTransform: 'none',
-    },
-  },
-  shape: {
-    borderRadius: 8,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          boxShadow: 'none',
-          padding: '8px 16px',
-          '&:hover': {
-            boxShadow: 'none',
-          },
-        },
-        contained: {
-          background: 'linear-gradient(to right, #1fb8aa, #0d9488)',
-          '&:hover': {
-            background: 'linear-gradient(to right, #0d9488, #0f766e)',
-          },
-        },
-        outlined: {
-          borderColor: '#1fb8aa',
-          color: '#1fb8aa',
-          '&:hover': {
-            borderColor: '#0d9488',
-            color: '#0d9488',
-            backgroundColor: 'rgba(13, 148, 136, 0.04)',
-          },
-        },
+      retry: (failureCount, error) => {
+        // Retry up to 3 times for other errors, but not for 4xx errors
+        if (error && typeof error === 'object' && 'response' in error) {
+          const status = (error.response as { status?: number })?.status;
+          if (status && status >= 400 && status < 500) {
+            return false; // Don't retry client errors
+          }
+        }
+        return failureCount < 3;
       },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
-    MuiSelect: {
-      styleOverrides: {
-        root: {
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#1fb8aa',
-          },
-          '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#1fb8aa',
-          },
-        },
-      },
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          '&.Mui-selected': {
-            backgroundColor: 'rgba(31, 184, 170, 0.1)',
-          },
-          '&.Mui-selected:hover': {
-            backgroundColor: 'rgba(31, 184, 170, 0.2)',
-          },
-          '&:hover': {
-            backgroundColor: 'rgba(31, 184, 170, 0.05)',
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #334155',
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-          backgroundImage: 'none',
-        },
-      },
-    },
-    MuiTableHead: {
-      styleOverrides: {
-        root: {
-          '& .MuiTableCell-root': {
-            fontWeight: 600,
-            color: '#FFFFFF',
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: '#334155',
-            },
-            '&:hover fieldset': {
-              borderColor: '#1fb8aa',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#1fb8aa',
-            },
-          },
-        },
-      },
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          fontWeight: 500,
-        },
-      },
+    mutations: {
+      retry: false, // Generally don't retry mutations
     },
   },
 });
@@ -230,12 +92,14 @@ const theme = createTheme({
 // eslint-disable-next-line react-refresh/only-export-components
 const RootComponent: React.FC = () => {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <CssBaseline />
       <SnackbarProvider>
         <QueryClientProvider client={queryClient}>
           <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-            <App />
+            <AxiosInterceptorSetup>
+              <App />
+            </AxiosInterceptorSetup>
           </ClerkProvider>
         </QueryClientProvider>
       </SnackbarProvider>

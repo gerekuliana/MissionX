@@ -7,15 +7,14 @@ import SecretsPage from '../modules/secrets/components/SecretsPage';
 import ProtectedRoute from '../common/components/ProtectedRoute';
 import { ROLES } from '../common/constants/roles';
 import InvoiceManagementPage from '../modules/invoices/components/InvoiceManagementPage';
-
-const HomePagePlaceholder: React.FC = () => <div>Home Page - Welcome!</div>;
+import HomePage from '../modules/home/components/HomePage';
 
 const AppRoutes: React.FC = () => {
   return (
     <Router>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePagePlaceholder />} />
+          <Route path="/" element={<HomePage />} />
           <Route element={<ProtectedRoute requiredRoles={[ROLES.SUPER_ADMIN]} />}>
             <Route path="/tenant-management" element={<TenantManagementPage />} />
             <Route path="/invoice-management" element={<InvoiceManagementPage />} />

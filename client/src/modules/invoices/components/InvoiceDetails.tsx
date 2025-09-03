@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
-  Paper,
   Grid as MuiGrid,
   Button,
   IconButton,
@@ -14,8 +13,6 @@ import {
   TableHead,
   TableRow,
   Chip,
-  Card,
-  CardContent,
   Skeleton,
   Stack,
   Tabs,
@@ -131,11 +128,9 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
         <Grid container spacing={2}>
           {Array.from(new Array(6)).map((_, index) => (
             <Grid size={{ xs: 12, md: 6 }} key={index}>
-              <Card>
-                <CardContent>
-                  <Skeleton variant="rectangular" width="100%" height={80} />
-                </CardContent>
-              </Card>
+              <Box sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                <Skeleton variant="rectangular" width="100%" height={80} />
+              </Box>
             </Grid>
           ))}
         </Grid>
@@ -199,72 +194,64 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
       {/* Summary Row */}
       <Grid container spacing={1} sx={{ mb: 1 }}>
         <Grid size={{ xs: 3 }}>
-          <Card sx={{ bgcolor: 'background.paper' }}>
-            <CardContent sx={{ p: 1, pb: '8px !important' }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                display="block"
-                fontSize="0.7rem">
-                Issue Date
-              </Typography>
-              <Typography variant="body2" fontWeight="medium" fontSize="0.85rem">
-                {formatDate(invoice.issueDate)}
-              </Typography>
-            </CardContent>
-          </Card>
+          <Box sx={{ p: 1, border: 1, borderColor: 'divider', borderRadius: 1, bgcolor: 'background.paper' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              fontSize="0.7rem">
+              Issue Date
+            </Typography>
+            <Typography variant="body2" fontWeight="medium" fontSize="0.85rem">
+              {formatDate(invoice.issueDate)}
+            </Typography>
+          </Box>
         </Grid>
         <Grid size={{ xs: 3 }}>
-          <Card sx={{ bgcolor: 'background.paper' }}>
-            <CardContent sx={{ p: 1, pb: '8px !important' }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                display="block"
-                fontSize="0.7rem">
-                Due Date
-              </Typography>
-              <Typography
-                variant="body2"
-                fontWeight="medium"
-                fontSize="0.85rem"
-                color={isOverdue(invoice.dueDate) ? 'error.main' : 'inherit'}>
-                {formatDate(invoice.dueDate)}
-              </Typography>
-            </CardContent>
-          </Card>
+          <Box sx={{ p: 1, border: 1, borderColor: 'divider', borderRadius: 1, bgcolor: 'background.paper' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              fontSize="0.7rem">
+              Due Date
+            </Typography>
+            <Typography
+              variant="body2"
+              fontWeight="medium"
+              fontSize="0.85rem"
+              color={isOverdue(invoice.dueDate) ? 'error.main' : 'inherit'}>
+              {formatDate(invoice.dueDate)}
+            </Typography>
+          </Box>
         </Grid>
         <Grid size={{ xs: 3 }}>
-          <Card sx={{ bgcolor: 'background.paper' }}>
-            <CardContent sx={{ p: 1, pb: '8px !important' }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                display="block"
-                fontSize="0.7rem">
-                Subtotal
-              </Typography>
-              <Typography variant="body2" fontWeight="medium" fontSize="0.85rem">
-                {formatCurrency(invoice.subtotal)}
-              </Typography>
-            </CardContent>
-          </Card>
+          <Box sx={{ p: 1, border: 1, borderColor: 'divider', borderRadius: 1, bgcolor: 'background.paper' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              fontSize="0.7rem">
+              Subtotal
+            </Typography>
+            <Typography variant="body2" fontWeight="medium" fontSize="0.85rem">
+              {formatCurrency(invoice.subtotal)}
+            </Typography>
+          </Box>
         </Grid>
         <Grid size={{ xs: 3 }}>
-          <Card sx={{ bgcolor: 'primary.dark', color: 'primary.contrastText' }}>
-            <CardContent sx={{ p: 1, pb: '8px !important' }}>
-              <Typography
-                variant="caption"
-                sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                display="block"
-                fontSize="0.7rem">
-                Total
-              </Typography>
-              <Typography variant="body1" fontWeight="bold" fontSize="0.9rem">
-                {formatCurrency(invoice.totalAmount)}
-              </Typography>
-            </CardContent>
-          </Card>
+          <Box sx={{ p: 1, borderRadius: 1, bgcolor: 'primary.dark', color: 'primary.contrastText' }}>
+            <Typography
+              variant="caption"
+              sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+              display="block"
+              fontSize="0.7rem">
+              Total
+            </Typography>
+            <Typography variant="body1" fontWeight="bold" fontSize="0.9rem">
+              {formatCurrency(invoice.totalAmount)}
+            </Typography>
+          </Box>
         </Grid>
       </Grid>
 
@@ -282,7 +269,7 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
 
       {/* Line Items */}
       <TabPanel value={tabValue} index={0}>
-        <TableContainer component={Paper} sx={{ maxHeight: '300px', overflow: 'auto' }}>
+        <TableContainer sx={{ maxHeight: '300px', overflow: 'auto' }}>
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
@@ -359,57 +346,53 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
       <TabPanel value={tabValue} index={1}>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Card elevation={0} sx={{ height: '100%', border: 1, borderColor: 'divider' }}>
-              <CardContent sx={{ p: 2 }}>
-                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                  Vendor
+            <Box sx={{ height: '100%', border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
+              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                Vendor
+              </Typography>
+              <Typography variant="body2" fontWeight="medium">
+                {invoice.vendorName}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ whiteSpace: 'pre-line', mt: 1 }}>
+                {invoice.vendorAddress}
+              </Typography>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2">
+                  <strong>Phone:</strong> {invoice.vendorPhone}
                 </Typography>
-                <Typography variant="body2" fontWeight="medium">
-                  {invoice.vendorName}
+                <Typography variant="body2">
+                  <strong>Email:</strong> {invoice.vendorEmail}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ whiteSpace: 'pre-line', mt: 1 }}>
-                  {invoice.vendorAddress}
-                </Typography>
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="body2">
-                    <strong>Phone:</strong> {invoice.vendorPhone}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Email:</strong> {invoice.vendorEmail}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+              </Box>
+            </Box>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Card elevation={0} sx={{ height: '100%', border: 1, borderColor: 'divider' }}>
-              <CardContent sx={{ p: 2 }}>
-                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                  Customer
+            <Box sx={{ height: '100%', border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
+              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                Customer
+              </Typography>
+              <Typography variant="body2" fontWeight="medium">
+                {invoice.customerName}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ whiteSpace: 'pre-line', mt: 1 }}>
+                {invoice.customerAddress}
+              </Typography>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2">
+                  <strong>Phone:</strong> {invoice.customerPhone}
                 </Typography>
-                <Typography variant="body2" fontWeight="medium">
-                  {invoice.customerName}
+                <Typography variant="body2">
+                  <strong>Email:</strong> {invoice.customerEmail}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ whiteSpace: 'pre-line', mt: 1 }}>
-                  {invoice.customerAddress}
-                </Typography>
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="body2">
-                    <strong>Phone:</strong> {invoice.customerPhone}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Email:</strong> {invoice.customerEmail}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+              </Box>
+            </Box>
           </Grid>
         </Grid>
       </TabPanel>
@@ -417,16 +400,14 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
       {/* Terms & Conditions */}
       <TabPanel value={tabValue} index={2}>
         {invoice.terms ? (
-          <Card>
-            <CardContent>
-              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                Terms & Conditions
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {invoice.terms}
-              </Typography>
-            </CardContent>
-          </Card>
+          <Box sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+              Terms & Conditions
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {invoice.terms}
+            </Typography>
+          </Box>
         ) : (
           <Typography variant="body2" color="text.secondary">
             No terms and conditions specified for this invoice.

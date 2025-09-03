@@ -1,30 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Color palette */
-  --color-background: #0F172A;       /* Slate-900 */
-  --color-background-secondary: #1E293B; /* Slate-800 */
-  --color-background-tertiary: #334155; /* Slate-700 */
+  /* Color palette - Clean Black & White Theme */
+  --color-background: #FFFFFF;       /* Pure White */
+  --color-background-secondary: #F9FAFB; /* Gray-50 */
+  --color-background-tertiary: #F3F4F6; /* Gray-100 */
   
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #94A3B8;   /* Slate-400 */
-  --color-text-tertiary: #64748B;    /* Slate-500 */
+  --color-text-primary: #111827;     /* Gray-900 */
+  --color-text-secondary: #4B5563;   /* Gray-600 */
+  --color-text-tertiary: #6B7280;    /* Gray-500 */
   
-  --color-primary: #1fb8aa;          /* Teal-500 */
-  --color-primary-dark: #0d9488;     /* Teal-600 */
-  --color-primary-light: #3fc9bc;    /* Teal-400 */
+  --color-primary: #111827;          /* Gray-900 */
+  --color-primary-dark: #000000;     /* Pure Black */
+  --color-primary-light: #374151;    /* Gray-700 */
   
-  --color-secondary: #06b6d4;        /* Cyan-500 */
-  --color-secondary-dark: #0e7490;   /* Cyan-700 */
-  --color-secondary-light: #22d3f1;  /* Cyan-400 */
+  --color-secondary: #6B7280;        /* Gray-500 */
+  --color-secondary-dark: #4B5563;   /* Gray-600 */
+  --color-secondary-light: #9CA3AF;  /* Gray-400 */
   
-  --color-error: #EF4444;            /* Red-500 */
-  --color-warning: #F59E0B;          /* Amber-500 */
-  --color-success: #10B981;          /* Emerald-500 */
-  --color-info: #3B82F6;             /* Blue-500 */
+  --color-error: #DC2626;            /* Red-600 */
+  --color-warning: #D97706;          /* Amber-600 */
+  --color-success: #059669;          /* Emerald-600 */
+  --color-info: #2563EB;             /* Blue-600 */
   
-  --gradient-primary: linear-gradient(to right, var(--color-primary), var(--color-primary-dark));
-  --gradient-hover: linear-gradient(to right, var(--color-primary-dark), #0f766e);
+  --gradient-primary: linear-gradient(to right, #F9FAFB, #F3F4F6);
+  --gradient-hover: linear-gradient(to right, #F3F4F6, #E5E7EB);
   
   /* Typography */
   --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -66,7 +66,7 @@ html, body {
   line-height: 1.5;
   font-weight: 400;
   
-  color-scheme: dark;
+  color-scheme: light;
   color: var(--color-text-primary);
   background-color: var(--color-background);
   
@@ -119,45 +119,46 @@ p {
 
 /* Links */
 a {
-  color: var(--color-primary);
+  color: var(--color-info);
   text-decoration: none;
   transition: color var(--transition-fast) ease;
 }
 
 a:hover {
-  color: var(--color-primary-light);
+  color: var(--color-primary);
+  text-decoration: underline;
 }
 
 /* Global utility classes */
 .text-gradient {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-text-primary);
+  font-weight: 600;
 }
 
 .bg-gradient {
-  background: var(--gradient-primary);
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-background-tertiary);
 }
 
 .bg-gradient-hover:hover {
-  background: var(--gradient-hover);
+  background: var(--color-background-tertiary);
 }
 
 /* Form elements - ensure they match theme */
 input, select, textarea {
   font-family: var(--font-family);
   color: var(--color-text-primary);
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-background-tertiary);
+  background-color: var(--color-background);
+  border: 1px solid #D1D5DB;
   border-radius: var(--border-radius-md);
   padding: var(--spacing-2) var(--spacing-3);
-  transition: border-color var(--transition-fast) ease;
+  transition: border-color var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.05);
 }
 
 button {
@@ -179,10 +180,10 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-background-tertiary);
+  background: #D1D5DB;
   border-radius: var(--border-radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
+  background: #9CA3AF;
 }

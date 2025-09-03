@@ -64,7 +64,7 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
             duration: theme.transitions.duration.shortest,
           }),
           '&:hover': {
-            backgroundColor: 'rgba(31, 184, 170, 0.08)',
+            backgroundColor: theme.palette.action.hover,
           },
         }}>
         <Avatar
@@ -147,7 +147,7 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
               sx={{
                 px: 2,
                 '&:hover': {
-                  backgroundColor: 'rgba(31, 184, 170, 0.05)',
+                  backgroundColor: theme.palette.action.hover,
                 },
               }}>
               <ListItemIcon sx={{ minWidth: 36, color: theme.palette.primary.main }}>
@@ -163,7 +163,7 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
               sx={{
                 px: 2,
                 '&:hover': {
-                  backgroundColor: 'rgba(31, 184, 170, 0.05)',
+                  backgroundColor: theme.palette.action.hover,
                 },
               }}>
               <ListItemIcon sx={{ minWidth: 36, color: theme.palette.primary.main }}>

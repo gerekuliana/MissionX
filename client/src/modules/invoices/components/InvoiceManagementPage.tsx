@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Button, Divider, Paper } from '@mui/material';
-import { SmartToy as AIIcon } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CircularProgress,
+  TextField,
+  InputAdornment,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import { SmartToy as AIIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useInvoices } from '../invoiceQueries';
 import InvoiceTable from './InvoiceTable';
 import InvoiceDetails from './InvoiceDetails';
@@ -21,6 +32,7 @@ const InvoiceManagementPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const theme = useTheme();
 
   const { user } = useUser();
   const userRoles = (user?.publicMetadata?.roles as string[]) || [];
@@ -109,32 +121,26 @@ const InvoiceManagementPage: React.FC = () => {
   // If user is not a Super Admin, show access denied message
   if (!isSuperAdmin) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h4" color="error" gutterBottom>
-            Access Denied
-          </Typography>
-          <Typography variant="body1">
-            You don't have permission to access the Invoice Management page. Please contact your
-            administrator.
-          </Typography>
-        </Paper>
-      </Container>
+      <Box sx={{ backgroundColor: theme.palette.background.default, p: 3 }}>
+        <Card sx={{ backgroundColor: theme.palette.background.paper }}>
+          <CardContent sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h4" color="error" gutterBottom>
+              Access Denied
+            </Typography>
+            <Typography variant="body1">
+              You don't have permission to access the Invoice Management page. Please contact your
+              administrator.
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
     );
   }
 
   // If an invoice is selected, show only the details
   if (selectedInvoiceId) {
     return (
-      <Container
-        maxWidth={false}
-        sx={{
-          mt: 1,
-          mb: 1,
-          width: '100%',
-          maxWidth: '1400px',
-          px: { xs: 2, sm: 3 },
-        }}>
+      <Box sx={{ backgroundColor: theme.palette.background.default }}>
         <InvoiceDetails
           invoice={selectedInvoice}
           isLoading={isInvoiceLoading}
@@ -148,58 +154,74 @@ const InvoiceManagementPage: React.FC = () => {
           onClose={() => setIsChatDrawerOpen(false)}
           onHighlightInvoice={handleHighlightInvoice}
         />
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Container
-      maxWidth={false}
-      sx={{
-        mt: 2,
-        mb: 2,
-        width: '100%',
-        maxWidth: '1400px',
-        px: { xs: 2, sm: 3 },
-      }}>
-      {/* Page Header */}
-      <Box
+    <Box sx={{ backgroundColor: theme.palette.background.default }}>
+      <Card
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 3,
-          flexWrap: 'wrap',
-          gap: 2,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          overflow: 'hidden',
         }}>
-        <Typography variant="h5" component="h1" fontWeight="bold">
-          Invoice Management
-        </Typography>
+        <CardHeader
+          title={
+            <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+              Invoice Management
+            </Typography>
+          }
+          action={
+            <Button
+              variant="contained"
+              startIcon={<AIIcon />}
+              onClick={handleToggleChatDrawer}
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                '&:hover': { backgroundColor: theme.palette.primary.dark },
+              }}>
+              AI Assistant
+            </Button>
+          }
+        />
+        <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+          {/* Search field */}
+          <Box sx={{ p: 2, pb: 0 }}>
+            <TextField
+              fullWidth
+              placeholder="Search invoices by number, vendor or customer name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              variant="outlined"
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<AIIcon />}
-            onClick={handleToggleChatDrawer}>
-            AI Assistant
-          </Button>
-        </Box>
-      </Box>
-
-      <Divider sx={{ mb: 2 }} />
-
-      {/* Main Content - Invoice Table */}
-      <InvoiceTable
-        paginatedData={paginatedInvoices}
-        isLoading={isInvoicesLoading}
-        onViewInvoice={handleViewInvoice}
-        highlightedInvoiceId={highlightedInvoiceId}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleRowsPerPageChange}
-      />
+          {isInvoicesLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+              <CircularProgress />
+            </Box>
+          )}
+          {!isInvoicesLoading && (
+            <InvoiceTable
+              paginatedData={paginatedInvoices}
+              isLoading={isInvoicesLoading}
+              onViewInvoice={handleViewInvoice}
+              highlightedInvoiceId={highlightedInvoiceId}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+            />
+          )}
+        </CardContent>
+      </Card>
 
       {/* Chat Drawer */}
       <ChatDrawer
@@ -207,7 +229,7 @@ const InvoiceManagementPage: React.FC = () => {
         onClose={() => setIsChatDrawerOpen(false)}
         onHighlightInvoice={handleHighlightInvoice}
       />
-    </Container>
+    </Box>
   );
 };
 

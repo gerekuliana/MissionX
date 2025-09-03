@@ -10,7 +10,7 @@ const DEFAULT_DB_HOST = 'localhost';
 const DEFAULT_DB_PORT = 5432;
 const DEFAULT_DB_USERNAME = 'postgres';
 const DEFAULT_DB_PASSWORD = 'postgres';
-const DEFAULT_DB_DATABASE = 'postgres';
+const DEFAULT_DB_DATABASE = 'postgres3';
 
 const DECIMAL_RADIX = 10;
 const DB_HOST = process.env.DB_HOST || DEFAULT_DB_HOST;
@@ -25,7 +25,7 @@ const DB_SSL = process.env.DB_SSL === 'true';
 // For NestJS TypeORM Module
 export const getTypeOrmConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
     type: 'postgres',
-    host: configService.get('DB_HOST', 'db'),
+    host: configService.get('DB_HOST', 'db3'),
     port: configService.get('DB_PORT', DEFAULT_DB_PORT),
     username: configService.get('DB_USERNAME', DEFAULT_DB_USERNAME),
     password: configService.get('DB_PASSWORD', DEFAULT_DB_PASSWORD),
