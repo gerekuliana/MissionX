@@ -30,10 +30,11 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { User } from '../types/user.ts';
 import UserForm from '../components/UserForm.tsx';
+import UserFilters from '../components/UserFilters.tsx';
 import ConfirmationDialog from '../../../common/components/ConfirmationDialog.tsx';
 import useUserRoles from '../../../common/hooks/useUserRoles';
 import { ROLES } from '../../../common/constants/roles';
-import { getUsers } from '../userQueries.ts';
+import { getUsers, UserFilters as UserFiltersType } from '../userQueries.ts';
 import { deleteUser, activateUser, deactivateUser } from '../userMutations.ts';
 import { CACHE_TIMES } from '../../../common/constants/cacheTimes.ts';
 import { useUserManagementStore } from '../stores/userManagementStore';
@@ -69,6 +70,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     userToDeleteId,
     isConfirmToggleStatusDialogOpen,
     userToToggleStatus,
+    filters,
     openCreateForm,
     openEditForm,
     closeForm,
@@ -78,6 +80,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     openConfirmToggleStatusDialog,
     closeConfirmToggleStatusDialog,
     resetToggleStatusState,
+    setFilters,
   } = useUserManagementStore();
 
   const {
@@ -85,8 +88,8 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     isLoading,
     error: usersError,
   } = useQuery({
-    queryKey: [USER_QUERY_KEYS.GET_USERS],
-    queryFn: getUsers,
+    queryKey: [USER_QUERY_KEYS.GET_USERS, filters],
+    queryFn: () => getUsers(filters),
     staleTime: CACHE_TIMES.DEFAULT,
   });
 
@@ -126,6 +129,10 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     },
     onSettled: () => resetToggleStatusState(),
   });
+
+  const handleFiltersChange = (newFilters: UserFiltersType): void => {
+    setFilters(newFilters);
+  };
 
   const handleConfirmDelete = async (): Promise<void> => {
     if (userToDeleteId === null) return;
@@ -176,6 +183,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
             </Button>
           }
         />
+        <UserFilters filters={filters} onFiltersChange={handleFiltersChange} />
         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
           {isLoading && (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>

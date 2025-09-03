@@ -10,6 +10,7 @@ import { User } from '../../domain/entities/user.entity';
 import { IUserQueries } from './interfaces/user-queries.interface';
 import { UserDto } from './dto/user.dto';
 import { RoleDto } from '../roles/dto/role.dto';
+import { FilterUsersDto } from './dto/filter-user.dto';
 
 @Injectable()
 export class UserQueries implements IUserQueries {
@@ -50,16 +51,59 @@ export class UserQueries implements IUserQueries {
         return dto;
     }
 
-    async findAllUsersByTenant(tenantId: string): Promise<UserDto[]> {
-        const users = await this.userRepository.findAllByTenantId(tenantId);
+    private applyFilters(users: User[], filters?: FilterUsersDto): User[] {
+        if (!filters) {
+            return users;
+        }
 
-        return users.map((user) => this.mapToDto(user)).filter(Boolean) as UserDto[];
+        let filteredUsers = users;
+
+        if (filters.email) {
+            const emailLower = filters.email.toLowerCase();
+            filteredUsers = filteredUsers.filter((user) =>
+                user.email.toLowerCase().includes(emailLower),
+            );
+        }
+
+        if (filters.name) {
+            const nameLower = filters.name.toLowerCase();
+            filteredUsers = filteredUsers.filter((user) => {
+                const firstName = user.firstName?.toLowerCase() || '';
+                const lastName = user.lastName?.toLowerCase() || '';
+                const fullName = `${firstName} ${lastName}`.trim();
+                return (
+                    firstName.includes(nameLower) ||
+                    lastName.includes(nameLower) ||
+                    fullName.includes(nameLower)
+                );
+            });
+        }
+
+        if (filters.isActive !== undefined) {
+            filteredUsers = filteredUsers.filter((user) => user.isActive === filters.isActive);
+        }
+
+        if (filters.roleIds && filters.roleIds.length > 0) {
+            filteredUsers = filteredUsers.filter((user) =>
+                user.roles?.some((role) => filters.roleIds!.includes(role.id)),
+            );
+        }
+
+        return filteredUsers;
     }
 
-    async findAllUsers(): Promise<UserDto[]> {
-        const users = await this.userRepository.findAll();
+    async findAllUsersByTenant(tenantId: string, filters?: FilterUsersDto): Promise<UserDto[]> {
+        const users = await this.userRepository.findAllByTenantId(tenantId);
+        const filteredUsers = this.applyFilters(users, filters);
 
-        return users.map((user) => this.mapToDto(user)).filter(Boolean) as UserDto[];
+        return filteredUsers.map((user) => this.mapToDto(user)).filter(Boolean) as UserDto[];
+    }
+
+    async findAllUsers(filters?: FilterUsersDto): Promise<UserDto[]> {
+        const users = await this.userRepository.findAll();
+        const filteredUsers = this.applyFilters(users, filters);
+
+        return filteredUsers.map((user) => this.mapToDto(user)).filter(Boolean) as UserDto[];
     }
 
     async findUserById(id: string, requestingUserTenantId?: string): Promise<UserDto> {

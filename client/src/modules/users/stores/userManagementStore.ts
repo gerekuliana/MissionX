@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { User } from '../types/user';
+import { UserFilters } from '../userQueries';
 
 interface UserManagementState {
   isFormOpen: boolean;
@@ -8,6 +9,7 @@ interface UserManagementState {
   userToDeleteId: string | null;
   isConfirmToggleStatusDialogOpen: boolean;
   userToToggleStatus: User | null;
+  filters: UserFilters;
 
   openCreateForm: () => void;
   openEditForm: (user: User) => void;
@@ -20,6 +22,9 @@ interface UserManagementState {
   openConfirmToggleStatusDialog: (user: User) => void;
   closeConfirmToggleStatusDialog: () => void;
   resetToggleStatusState: () => void;
+
+  setFilters: (filters: UserFilters) => void;
+  clearFilters: () => void;
 }
 
 export const useUserManagementStore = create<UserManagementState>((set) => ({
@@ -30,6 +35,7 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
   userToDeleteId: null,
   isConfirmToggleStatusDialogOpen: false,
   userToToggleStatus: null,
+  filters: {},
 
   openCreateForm: (): void => set({ isFormOpen: true, selectedUser: null }),
   openEditForm: (user: User): void => set({ isFormOpen: true, selectedUser: user }),
@@ -47,4 +53,7 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
     set({ isConfirmToggleStatusDialogOpen: false, userToToggleStatus: null }),
   resetToggleStatusState: (): void =>
     set({ isConfirmToggleStatusDialogOpen: false, userToToggleStatus: null }),
+
+  setFilters: (filters: UserFilters): void => set({ filters }),
+  clearFilters: (): void => set({ filters: {} }),
 }));
