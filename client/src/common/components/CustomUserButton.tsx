@@ -11,11 +11,15 @@ import {
   ListItemButton,
   Divider,
   Tooltip,
+  IconButton,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { useClerk, useUser } from '@clerk/clerk-react';
 import { useTheme as useMuiTheme } from '@mui/material';
+import { useTheme } from '../../themes/useTheme';
 
 type CustomUserButtonProps = {
   afterSignOutUrl: string;
@@ -27,6 +31,7 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
   const { signOut } = useClerk();
   const { user } = useUser();
   const muiTheme = useMuiTheme();
+  const { themeMode, toggleTheme } = useTheme();
 
   const handleClick = (): void => {
     setAnchorEl(buttonRef.current);
@@ -51,31 +56,49 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
 
   return (
     <>
-      <Box
-        ref={buttonRef}
-        onClick={handleClick}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          cursor: 'pointer',
-          borderRadius: '50%',
-          padding: '2px',
-          transition: muiTheme.transitions.create(['background-color', 'box-shadow'], {
-            duration: muiTheme.transitions.duration.shortest,
-          }),
-          '&:hover': {
-            backgroundColor: muiTheme.palette.action.hover,
-          },
-        }}>
-        <Avatar
-          src={user?.imageUrl}
-          alt={user?.firstName || 'User'}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Tooltip title={`Switch to ${themeMode === 'dark' ? 'light' : 'dark'} theme`}>
+          <IconButton
+            onClick={toggleTheme}
+            sx={{
+              color: muiTheme.palette.primary.main,
+              transition: muiTheme.transitions.create(['background-color', 'transform'], {
+                duration: muiTheme.transitions.duration.shortest,
+              }),
+              '&:hover': {
+                backgroundColor: muiTheme.palette.action.hover,
+                transform: 'rotate(20deg)',
+              },
+            }}>
+            {themeMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+        </Tooltip>
+        <Box
+          ref={buttonRef}
+          onClick={handleClick}
           sx={{
-            width: 36,
-            height: 36,
-            border: `2px solid ${muiTheme.palette.primary.main}`,
-          }}
-        />
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'pointer',
+            borderRadius: '50%',
+            padding: '2px',
+            transition: muiTheme.transitions.create(['background-color', 'box-shadow'], {
+              duration: muiTheme.transitions.duration.shortest,
+            }),
+            '&:hover': {
+              backgroundColor: muiTheme.palette.action.hover,
+            },
+          }}>
+          <Avatar
+            src={user?.imageUrl}
+            alt={user?.firstName || 'User'}
+            sx={{
+              width: 36,
+              height: 36,
+              border: `2px solid ${muiTheme.palette.primary.main}`,
+            }}
+          />
+        </Box>
       </Box>
       <Popover
         open={open}
@@ -141,6 +164,22 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
         <Divider sx={{ mb: 1 }} />
 
         <List disablePadding>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={toggleTheme}
+              sx={{
+                px: 2,
+                '&:hover': {
+                  backgroundColor: muiTheme.palette.action.hover,
+                },
+              }}>
+              <ListItemIcon sx={{ minWidth: 36, color: muiTheme.palette.primary.main }}>
+                {themeMode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+              </ListItemIcon>
+              <ListItemText primary={`Switch to ${themeMode === 'dark' ? 'light' : 'dark'} theme`} />
+            </ListItemButton>
+          </ListItem>
+
           <ListItem disablePadding>
             <ListItemButton
               onClick={handleManageAccount}

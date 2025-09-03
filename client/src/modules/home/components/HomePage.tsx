@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
   });
 
   const userGreeting = user?.firstName ? `Welcome back, ${user.firstName}!` : 'Welcome back!';
-  
+
   const getRoleDisplay = () => {
     if (isSuperAdmin) return 'Super Administrator';
     if (isAdmin) return 'Administrator';
@@ -95,18 +95,18 @@ const HomePage: React.FC = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box sx={{ 
-        mb: 6, 
+      <Box sx={{
+        mb: 6,
         textAlign: 'center',
-        pt: 4 
+        pt: 4,
       }}>
         <Typography variant="h3" gutterBottom fontWeight="bold">
           {userGreeting}
         </Typography>
-        <Stack 
-          direction="row" 
-          spacing={1} 
-          alignItems="center" 
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
           justifyContent="center"
           sx={{ mt: 2 }}
         >
@@ -128,9 +128,9 @@ const HomePage: React.FC = () => {
             </Typography>
           </Box>
 
-          <Grid 
-            container 
-            spacing={3} 
+          <Grid
+            container
+            spacing={3}
             justifyContent="center"
             sx={{ mb: 6 }}
           >
@@ -186,10 +186,10 @@ const HomePage: React.FC = () => {
       )}
 
       {!isSuperAdmin && !isAdmin && (
-        <Box sx={{ 
-          display: 'flex', 
+        <Box sx={{
+          display: 'flex',
           justifyContent: 'center',
-          mt: 6 
+          mt: 6,
         }}>
           <Paper
             elevation={0}
@@ -214,10 +214,10 @@ const HomePage: React.FC = () => {
       )}
 
       {isSuperAdmin && (
-        <Box sx={{ 
-          display: 'flex', 
+        <Box sx={{
+          display: 'flex',
           justifyContent: 'center',
-          mt: 6 
+          mt: 6,
         }}>
           <Paper
             elevation={0}
@@ -229,10 +229,10 @@ const HomePage: React.FC = () => {
               backgroundColor: alpha(theme.palette.info.main, 0.05),
             }}
           >
-            <Stack 
-              direction="row" 
-              alignItems="center" 
-              spacing={2} 
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={2}
               mb={3}
               justifyContent="center"
             >
@@ -241,18 +241,18 @@ const HomePage: React.FC = () => {
                 Administrator Tools
               </Typography>
             </Stack>
-            <Typography 
-              variant="body1" 
-              color="text.secondary" 
+            <Typography
+              variant="body1"
+              color="text.secondary"
               gutterBottom
               textAlign="center"
               sx={{ mb: 3 }}
             >
               As a Super Administrator, you have full access to all system features and settings.
             </Typography>
-            <Stack 
-              direction="row" 
-              spacing={2} 
+            <Stack
+              direction="row"
+              spacing={2}
               justifyContent="center"
             >
               <Button
