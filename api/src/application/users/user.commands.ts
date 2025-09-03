@@ -480,6 +480,13 @@ export class UserCommands implements IUserCommands {
     }
 
     private async validateUserDoesNotExist(email: string): Promise<void> {
+        // Additional validation for email domain
+        if (!email.endsWith('@honeycombsoft.com')) {
+            throw new BadRequestException(
+                'Only email addresses from @honeycombsoft.com domain are allowed',
+            );
+        }
+
         const existingByEmail = await this.userRepository.findByEmail(email);
 
         if (existingByEmail) {
