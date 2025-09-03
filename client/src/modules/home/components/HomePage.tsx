@@ -6,7 +6,6 @@ import {
   CardContent,
   CardActionArea,
   Container,
-  Grid,
   Typography,
   Paper,
   Stack,
@@ -14,6 +13,7 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import {
   Group as UsersIcon,
   Business as TenantsIcon,
@@ -135,7 +135,7 @@ const HomePage: React.FC = () => {
             sx={{ mb: 6 }}
           >
             {filteredQuickActions.map((action) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={action.path}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={action.path}>
                 <Card
                   elevation={0}
                   sx={{
