@@ -14,10 +14,7 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useClerk, useUser } from '@clerk/clerk-react';
-import { useTheme } from '../../themes/ThemeContext';
 import { useTheme as useMuiTheme } from '@mui/material';
 
 type CustomUserButtonProps = {
@@ -30,7 +27,6 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
   const { signOut } = useClerk();
   const { user } = useUser();
   const muiTheme = useMuiTheme();
-  const { mode, toggleTheme } = useTheme();
 
   const handleClick = (): void => {
     setAnchorEl(buttonRef.current);
@@ -49,10 +45,6 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
 
   const handleManageAccount = (): void => {
     handleClose();
-  };
-
-  const handleToggleTheme = (): void => {
-    toggleTheme();
   };
 
   const open = Boolean(anchorEl);
@@ -162,22 +154,6 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
                 <SettingsIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Manage account" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={handleToggleTheme}
-              sx={{
-                px: 2,
-                '&:hover': {
-                  backgroundColor: muiTheme.palette.action.hover,
-                },
-              }}>
-              <ListItemIcon sx={{ minWidth: 36, color: muiTheme.palette.primary.main }}>
-                {mode === 'light' ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
-              </ListItemIcon>
-              <ListItemText primary={mode === 'light' ? 'Dark mode' : 'Light mode'} />
             </ListItemButton>
           </ListItem>
 
