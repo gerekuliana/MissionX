@@ -56,7 +56,14 @@ const generateUserSchema = (allRoles: Role[]) =>
   Yup.object().shape({
     firstName: Yup.string().max(100, 'Too Long!').optional(),
     lastName: Yup.string().max(100, 'Too Long!').optional(),
-    email: Yup.string().email('Invalid email').max(255).required('Required'),
+    email: Yup.string()
+      .email('Invalid email')
+      .max(255)
+      .required('Required')
+      .test('email-domain', 'Email must be from @honeycombsoft.com domain', (value) => {
+        if (!value) return false;
+        return value.endsWith('@honeycombsoft.com');
+      }),
     tenantId: Yup.string().when(['roleIds', '$isSuperAdmin'], {
       is: (roleIds: string[], isContextSuperAdmin: boolean) => {
         const superAdminRole = allRoles?.find((r) => r.name === ROLES.SUPER_ADMIN);
@@ -240,11 +247,12 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose }) => {
                 name="email"
                 label="Email"
                 type="email"
+                placeholder="user@honeycombsoft.com"
                 fullWidth
                 required
                 disabled={isEditing}
                 error={touched.email && !!errors.email}
-                helperText={touched.email && errors.email}
+                helperText={touched.email && errors.email || (!touched.email && 'Must be from @honeycombsoft.com domain')}
               />
 
               {isSuperAdmin && (
