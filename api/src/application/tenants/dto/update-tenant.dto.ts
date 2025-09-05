@@ -12,4 +12,15 @@ export class UpdateTenantDto {
     @IsString()
     @MaxLength(255)
     name?: string;
+
+    @ApiProperty({
+        description: 'Billing contact information (name or email)',
+        example: 'billing@updated.com',
+        required: false,
+        maxLength: 255,
+    })
+    @IsOptional()
+    @IsString()
+    @MaxLength(255)
+    billingContact?: string;
 }
