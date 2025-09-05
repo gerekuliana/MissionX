@@ -19,6 +19,7 @@ export class TenantCommands implements ITenantCommands {
         dto.id = tenant.id;
         dto.name = tenant.name;
         dto.alias = tenant.alias;
+        dto.billingContact = tenant.billingContact;
 
         return dto;
     }
