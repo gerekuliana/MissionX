@@ -11,11 +11,15 @@ import {
   ListItemButton,
   Divider,
   Tooltip,
+  IconButton,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useClerk, useUser } from '@clerk/clerk-react';
 import { useTheme as useMuiTheme } from '@mui/material';
+import { useTheme } from '../../themes/useTheme';
 
 type CustomUserButtonProps = {
   afterSignOutUrl: string;
@@ -27,6 +31,7 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
   const { signOut } = useClerk();
   const { user } = useUser();
   const muiTheme = useMuiTheme();
+  const { themeMode, toggleTheme } = useTheme();
 
   const handleClick = (): void => {
     setAnchorEl(buttonRef.current);
@@ -136,6 +141,31 @@ const CustomUserButton: React.FC<CustomUserButtonProps> = ({ afterSignOutUrl }) 
               </Typography>
             </Tooltip>
           </Box>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 2,
+            py: 1,
+          }}>
+          <Typography variant="body2" sx={{ color: muiTheme.palette.text.secondary }}>
+            Theme
+          </Typography>
+          <IconButton
+            onClick={toggleTheme}
+            size="small"
+            sx={{
+              ml: 1,
+              color: muiTheme.palette.primary.main,
+              '&:hover': {
+                backgroundColor: muiTheme.palette.action.hover,
+              },
+            }}>
+            {themeMode === 'light' ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
+          </IconButton>
         </Box>
 
         <Divider sx={{ mb: 1 }} />
