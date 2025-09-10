@@ -38,6 +38,7 @@ const DEFAULT_LANDING_URL = 'http://localhost:3001';
 const DEFAULT_CORS_ORIGINS = [DEFAULT_CLIENT_URL, DEFAULT_LANDING_URL];
 
 async function bootstrap() {
+    console.log('Hello');
     const logger = new Logger('Bootstrap');
 
     try {
