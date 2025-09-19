@@ -308,7 +308,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                     {isSuperAdmin && (
                       <TableCell>
                         <Stack spacing={1}>
-                          <Typography variant="body2">tenant</Typography>
+                          <Typography variant="body2">Tenant</Typography>
                           <FormControl size="small" sx={{ minWidth: 120 }}>
                             <Select
                               value={tenantFilter}
