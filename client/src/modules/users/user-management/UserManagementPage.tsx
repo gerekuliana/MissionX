@@ -80,6 +80,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     emailFilter,
     roleFilter,
     statusFilter,
+    tenantFilter,
     openCreateForm,
     openEditForm,
     closeForm,
@@ -92,6 +93,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     setEmailFilter,
     setRoleFilter,
     setStatusFilter,
+    setTenantFilter,
     clearFilters,
   } = useUserManagementStore();
 
@@ -126,6 +128,17 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     return Array.from(rolesSet).sort();
   }, [users]);
 
+  // Get unique tenants for filter dropdown
+  const availableTenants = useMemo(() => {
+    const tenantsSet = new Set<string>();
+    users.forEach((user) => {
+      if (user.tenant?.name) {
+        tenantsSet.add(user.tenant.name);
+      }
+    });
+    return Array.from(tenantsSet).sort();
+  }, [users]);
+
   // Apply client-side filtering
   const filteredUsers = useMemo(() => {
     let result = [...users];
@@ -151,10 +164,17 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
       );
     }
 
-    return result;
-  }, [users, emailFilter, roleFilter, statusFilter]);
+    // Filter by tenant
+    if (tenantFilter) {
+      result = result.filter((user) =>
+        user.tenant?.name === tenantFilter,
+      );
+    }
 
-  const hasActiveFilters = emailFilter || roleFilter || statusFilter !== 'all';
+    return result;
+  }, [users, emailFilter, roleFilter, statusFilter, tenantFilter]);
+
+  const hasActiveFilters = emailFilter || roleFilter || statusFilter !== 'all' || tenantFilter;
 
   const { mutateAsync: removeUserMutate, isPending: isDeleting } = useMutation({
     mutationFn: deleteUser,
@@ -285,7 +305,30 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                       </Stack>
                     </TableCell>
                     <TableCell>Name</TableCell>
-                    {isSuperAdmin && <TableCell>Tenant</TableCell>}
+                    {isSuperAdmin && (
+                      <TableCell>
+                        <Stack spacing={1}>
+                          <Typography variant="body2">Tenant</Typography>
+                          <FormControl size="small" sx={{ minWidth: 120 }}>
+                            <Select
+                              value={tenantFilter}
+                              onChange={(e: SelectChangeEvent) => setTenantFilter(e.target.value)}
+                              displayEmpty
+                              sx={{
+                                backgroundColor: theme.palette.background.default,
+                              }}
+                            >
+                              <MenuItem value="">All Tenants</MenuItem>
+                              {availableTenants.map((tenant) => (
+                                <MenuItem key={tenant} value={tenant}>
+                                  {tenant}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Stack>
+                      </TableCell>
+                    )}
                     <TableCell>
                       <Stack spacing={1}>
                         <Typography variant="body2">Roles</Typography>
