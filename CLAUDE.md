@@ -36,6 +36,7 @@ npm run start:prod         # Start production build
 npm run lint               # Run ESLint and fix issues
 npm run test               # Run unit tests
 npm run test:e2e           # Run e2e tests
+npm run test:cov           # Run tests with coverage
 npm run migration:generate # Generate TypeORM migration
 npm run migration:run      # Run migrations
 npm run migration:revert   # Revert last migration
