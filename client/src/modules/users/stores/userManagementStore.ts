@@ -11,10 +11,8 @@ interface UserManagementState {
   isConfirmToggleStatusDialogOpen: boolean;
   userToToggleStatus: User | null;
 
-  // Filter states
-  emailFilter: string;
-  roleFilter: string;
-  statusFilter: StatusFilter;
+  // Filter state
+  searchTerm: string;
 
   openCreateForm: () => void;
   openEditForm: (user: User) => void;
@@ -29,10 +27,8 @@ interface UserManagementState {
   resetToggleStatusState: () => void;
 
   // Filter actions
-  setEmailFilter: (email: string) => void;
-  setRoleFilter: (role: string) => void;
-  setStatusFilter: (status: StatusFilter) => void;
-  clearFilters: () => void;
+  setSearchTerm: (searchTerm: string) => void;
+  clearSearch: () => void;
 }
 
 export const useUserManagementStore = create<UserManagementState>((set) => ({
@@ -44,10 +40,8 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
   isConfirmToggleStatusDialogOpen: false,
   userToToggleStatus: null,
 
-  // Filter initial states
-  emailFilter: '',
-  roleFilter: '',
-  statusFilter: 'all',
+  // Filter initial state
+  searchTerm: '',
 
   openCreateForm: (): void => set({ isFormOpen: true, selectedUser: null }),
   openEditForm: (user: User): void => set({ isFormOpen: true, selectedUser: user }),
@@ -67,9 +61,6 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
     set({ isConfirmToggleStatusDialogOpen: false, userToToggleStatus: null }),
 
   // Filter actions
-  setEmailFilter: (email: string): void => set({ emailFilter: email }),
-  setRoleFilter: (role: string): void => set({ roleFilter: role }),
-  setStatusFilter: (status: StatusFilter): void => set({ statusFilter: status }),
-  clearFilters: (): void =>
-    set({ emailFilter: '', roleFilter: '', statusFilter: 'all' }),
+  setSearchTerm: (searchTerm: string): void => set({ searchTerm }),
+  clearSearch: (): void => set({ searchTerm: '' }),
 }));
