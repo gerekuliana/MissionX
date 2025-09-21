@@ -12,7 +12,6 @@ interface UserManagementState {
   userToToggleStatus: User | null;
 
   // Filter states
-  emailFilter: string;
   roleFilter: string;
   statusFilter: StatusFilter;
 
@@ -29,7 +28,6 @@ interface UserManagementState {
   resetToggleStatusState: () => void;
 
   // Filter actions
-  setEmailFilter: (email: string) => void;
   setRoleFilter: (role: string) => void;
   setStatusFilter: (status: StatusFilter) => void;
   clearFilters: () => void;
@@ -45,7 +43,6 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
   userToToggleStatus: null,
 
   // Filter initial states
-  emailFilter: '',
   roleFilter: '',
   statusFilter: 'all',
 
@@ -67,9 +64,8 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
     set({ isConfirmToggleStatusDialogOpen: false, userToToggleStatus: null }),
 
   // Filter actions
-  setEmailFilter: (email: string): void => set({ emailFilter: email }),
   setRoleFilter: (role: string): void => set({ roleFilter: role }),
   setStatusFilter: (status: StatusFilter): void => set({ statusFilter: status }),
   clearFilters: (): void =>
-    set({ emailFilter: '', roleFilter: '', statusFilter: 'all' }),
+    set({ roleFilter: '', statusFilter: 'all' }),
 }));
