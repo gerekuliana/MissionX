@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import {
   Box,
@@ -70,6 +70,8 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
   const userRoles = useUserRoles();
   const isSuperAdmin = userRoles.includes(ROLES.SUPER_ADMIN);
 
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
   const {
     isFormOpen,
     selectedUser,
@@ -80,6 +82,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     emailFilter,
     roleFilter,
     statusFilter,
+    searchTerm,
     openCreateForm,
     openEditForm,
     closeForm,
@@ -92,6 +95,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     setEmailFilter,
     setRoleFilter,
     setStatusFilter,
+    setSearchTerm,
     clearFilters,
   } = useUserManagementStore();
 
@@ -113,6 +117,14 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     }
   }, [usersError, enqueueSnackbar]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const users = useMemo(() => usersData?.data ?? [], [usersData]);
 
   // Get unique roles for filter dropdown
@@ -129,6 +141,22 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
   // Apply client-side filtering
   const filteredUsers = useMemo(() => {
     let result = [...users];
+
+    // Search filter for email and name
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
+      result = result.filter((user) => {
+        const email = user.email.toLowerCase();
+        const firstName = (user.firstName || '').toLowerCase();
+        const lastName = (user.lastName || '').toLowerCase();
+        const fullName = `${firstName} ${lastName}`.trim();
+
+        return email.includes(searchLower) ||
+               firstName.includes(searchLower) ||
+               lastName.includes(searchLower) ||
+               fullName.includes(searchLower);
+      });
+    }
 
     // Filter by email
     if (emailFilter) {
@@ -152,9 +180,9 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     }
 
     return result;
-  }, [users, emailFilter, roleFilter, statusFilter]);
+  }, [users, debouncedSearchTerm, emailFilter, roleFilter, statusFilter]);
 
-  const hasActiveFilters = emailFilter || roleFilter || statusFilter !== 'all';
+  const hasActiveFilters = searchTerm || emailFilter || roleFilter || statusFilter !== 'all';
 
   const { mutateAsync: removeUserMutate, isPending: isDeleting } = useMutation({
     mutationFn: deleteUser,
@@ -221,15 +249,45 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
             </Typography>
           }
           action={
-            <Button
-              variant="contained"
-              onClick={openCreateForm}
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-                '&:hover': { backgroundColor: theme.palette.primary.dark },
-              }}>
-              + Add User
-            </Button>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <TextField
+                size="small"
+                placeholder="Search by email or name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchTerm && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        onClick={() => setSearchTerm('')}
+                        edge="end"
+                      >
+                        <ClearIcon fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    backgroundColor: theme.palette.background.default,
+                  },
+                }}
+                sx={{ minWidth: 280 }}
+              />
+              <Button
+                variant="contained"
+                onClick={openCreateForm}
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  '&:hover': { backgroundColor: theme.palette.primary.dark },
+                }}>
+                + Add User
+              </Button>
+            </Stack>
           }
         />
         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
