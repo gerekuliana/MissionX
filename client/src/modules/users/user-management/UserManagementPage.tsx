@@ -44,8 +44,9 @@ import { ROLES } from '../../../common/constants/roles';
 import { getUsers } from '../userQueries.ts';
 import { deleteUser, activateUser, deactivateUser } from '../userMutations.ts';
 import { CACHE_TIMES } from '../../../common/constants/cacheTimes.ts';
-import { useUserManagementStore, StatusFilter } from '../stores/userManagementStore';
+import { useUserManagementStore } from '../stores/userManagementStore';
 import { USER_QUERY_KEYS } from '../userQueryKeys.ts';
+import { getTenants } from '../../tenants/tenantQueries.ts';
 
 type UserManagementPageProps = Record<string, unknown>;
 
@@ -77,9 +78,8 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     userToDeleteId,
     isConfirmToggleStatusDialogOpen,
     userToToggleStatus,
-    emailFilter,
-    roleFilter,
-    statusFilter,
+    nameFilter,
+    tenantFilter,
     openCreateForm,
     openEditForm,
     closeForm,
@@ -89,19 +89,26 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     openConfirmToggleStatusDialog,
     closeConfirmToggleStatusDialog,
     resetToggleStatusState,
-    setEmailFilter,
-    setRoleFilter,
-    setStatusFilter,
+    setNameFilter,
+    setTenantFilter,
     clearFilters,
   } = useUserManagementStore();
+
+  const { data: tenantsData } = useQuery({
+    queryKey: ['tenants'],
+    queryFn: getTenants,
+    enabled: isSuperAdmin,
+    staleTime: CACHE_TIMES.DEFAULT,
+  });
+  const tenants = useMemo(() => tenantsData?.data ?? [], [tenantsData]);
 
   const {
     data: usersData,
     isLoading,
     error: usersError,
   } = useQuery({
-    queryKey: [USER_QUERY_KEYS.GET_USERS],
-    queryFn: getUsers,
+    queryKey: [USER_QUERY_KEYS.GET_USERS, nameFilter, tenantFilter],
+    queryFn: () => getUsers({ name: nameFilter, tenantId: tenantFilter }),
     staleTime: CACHE_TIMES.DEFAULT,
   });
 
@@ -115,46 +122,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
 
   const users = useMemo(() => usersData?.data ?? [], [usersData]);
 
-  // Get unique roles for filter dropdown
-  const availableRoles = useMemo(() => {
-    const rolesSet = new Set<string>();
-    users.forEach((user) => {
-      user.roles.forEach((role) => {
-        rolesSet.add(role.name);
-      });
-    });
-    return Array.from(rolesSet).sort();
-  }, [users]);
-
-  // Apply client-side filtering
-  const filteredUsers = useMemo(() => {
-    let result = [...users];
-
-    // Filter by email
-    if (emailFilter) {
-      result = result.filter((user) =>
-        user.email.toLowerCase().includes(emailFilter.toLowerCase()),
-      );
-    }
-
-    // Filter by role
-    if (roleFilter) {
-      result = result.filter((user) =>
-        user.roles.some((role) => role.name === roleFilter),
-      );
-    }
-
-    // Filter by status
-    if (statusFilter !== 'all') {
-      result = result.filter((user) =>
-        statusFilter === 'active' ? user.isActive : !user.isActive,
-      );
-    }
-
-    return result;
-  }, [users, emailFilter, roleFilter, statusFilter]);
-
-  const hasActiveFilters = emailFilter || roleFilter || statusFilter !== 'all';
+  const hasActiveFilters = nameFilter || tenantFilter;
 
   const { mutateAsync: removeUserMutate, isPending: isDeleting } = useMutation({
     mutationFn: deleteUser,
@@ -251,27 +219,27 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                         borderBottom: `1px solid ${theme.palette.divider}`,
                       },
                     }}>
+                    <TableCell>Email</TableCell>
                     <TableCell>
                       <Stack spacing={1}>
-                        <Typography variant="body2">Email</Typography>
+                        <Typography variant="body2">Name</Typography>
                         <TextField
                           size="small"
-                          placeholder="Filter by email"
-                          value={emailFilter}
-                          onChange={(e) => setEmailFilter(e.target.value)}
+                          placeholder="Filter by name"
+                          value={nameFilter}
+                          onChange={(e) => setNameFilter(e.target.value)}
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start">
                                 <SearchIcon fontSize="small" />
                               </InputAdornment>
                             ),
-                            endAdornment: emailFilter && (
+                            endAdornment: nameFilter && (
                               <InputAdornment position="end">
                                 <IconButton
                                   size="small"
-                                  onClick={() => setEmailFilter('')}
-                                  edge="end"
-                                >
+                                  onClick={() => setNameFilter('')}
+                                  edge="end">
                                   <ClearIcon fontSize="small" />
                                 </IconButton>
                               </InputAdornment>
@@ -284,48 +252,33 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                         />
                       </Stack>
                     </TableCell>
-                    <TableCell>Name</TableCell>
-                    {isSuperAdmin && <TableCell>Tenant</TableCell>}
-                    <TableCell>
-                      <Stack spacing={1}>
-                        <Typography variant="body2">Roles</Typography>
-                        <FormControl size="small" sx={{ minWidth: 120 }}>
-                          <Select
-                            value={roleFilter}
-                            onChange={(e: SelectChangeEvent) => setRoleFilter(e.target.value)}
-                            displayEmpty
-                            sx={{
-                              backgroundColor: theme.palette.background.default,
-                            }}
-                          >
-                            <MenuItem value="">All Roles</MenuItem>
-                            {availableRoles.map((role) => (
-                              <MenuItem key={role} value={role}>
-                                {role}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Stack spacing={1}>
-                        <Typography variant="body2">Status</Typography>
-                        <FormControl size="small" sx={{ minWidth: 120 }}>
-                          <Select
-                            value={statusFilter}
-                            onChange={(e: SelectChangeEvent) => setStatusFilter(e.target.value as StatusFilter)}
-                            sx={{
-                              backgroundColor: theme.palette.background.default,
-                            }}
-                          >
-                            <MenuItem value="all">All</MenuItem>
-                            <MenuItem value="active">Active Only</MenuItem>
-                            <MenuItem value="inactive">Inactive Only</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Stack>
-                    </TableCell>
+                    {isSuperAdmin && (
+                      <TableCell>
+                        <Stack spacing={1}>
+                          <Typography variant="body2">Tenant</Typography>
+                          <FormControl size="small" sx={{ minWidth: 120 }}>
+                            <Select
+                              value={tenantFilter}
+                              onChange={(e: SelectChangeEvent) =>
+                                setTenantFilter(e.target.value)
+                              }
+                              displayEmpty
+                              sx={{
+                                backgroundColor: theme.palette.background.default,
+                              }}>
+                              <MenuItem value="">All Tenants</MenuItem>
+                              {tenants.map((tenant) => (
+                                <MenuItem key={tenant.id} value={tenant.id}>
+                                  {tenant.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Stack>
+                      </TableCell>
+                    )}
+                    <TableCell>Roles</TableCell>
+                    <TableCell>Status</TableCell>
                     <TableCell>Created At</TableCell>
                     <TableCell align="right">
                       {hasActiveFilters && (
@@ -355,14 +308,14 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                       borderBottom: 0,
                     },
                   }}>
-                  {filteredUsers.length === 0 && !isLoading && (
+                  {users.length === 0 && !isLoading && (
                     <TableRow>
                       <TableCell colSpan={isSuperAdmin ? 7 : 6} align="center" sx={{ py: 3 }}>
                         {hasActiveFilters ? 'No users match the current filters.' : 'No users found.'}
                       </TableCell>
                     </TableRow>
                   )}
-                  {filteredUsers.map((user) => (
+                  {users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell component="th" scope="row">
                         {user.email}

@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { User } from '../types/user';
 
-export type StatusFilter = 'all' | 'active' | 'inactive';
-
 interface UserManagementState {
   isFormOpen: boolean;
   selectedUser: User | null;
@@ -12,9 +10,8 @@ interface UserManagementState {
   userToToggleStatus: User | null;
 
   // Filter states
-  emailFilter: string;
-  roleFilter: string;
-  statusFilter: StatusFilter;
+  nameFilter: string;
+  tenantFilter: string;
 
   openCreateForm: () => void;
   openEditForm: (user: User) => void;
@@ -29,9 +26,8 @@ interface UserManagementState {
   resetToggleStatusState: () => void;
 
   // Filter actions
-  setEmailFilter: (email: string) => void;
-  setRoleFilter: (role: string) => void;
-  setStatusFilter: (status: StatusFilter) => void;
+  setNameFilter: (name: string) => void;
+  setTenantFilter: (tenantId: string) => void;
   clearFilters: () => void;
 }
 
@@ -45,9 +41,8 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
   userToToggleStatus: null,
 
   // Filter initial states
-  emailFilter: '',
-  roleFilter: '',
-  statusFilter: 'all',
+  nameFilter: '',
+  tenantFilter: '',
 
   openCreateForm: (): void => set({ isFormOpen: true, selectedUser: null }),
   openEditForm: (user: User): void => set({ isFormOpen: true, selectedUser: user }),
@@ -67,9 +62,7 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
     set({ isConfirmToggleStatusDialogOpen: false, userToToggleStatus: null }),
 
   // Filter actions
-  setEmailFilter: (email: string): void => set({ emailFilter: email }),
-  setRoleFilter: (role: string): void => set({ roleFilter: role }),
-  setStatusFilter: (status: StatusFilter): void => set({ statusFilter: status }),
-  clearFilters: (): void =>
-    set({ emailFilter: '', roleFilter: '', statusFilter: 'all' }),
+  setNameFilter: (name: string): void => set({ nameFilter: name }),
+  setTenantFilter: (tenantId: string): void => set({ tenantFilter: tenantId }),
+  clearFilters: (): void => set({ nameFilter: '', tenantFilter: '' }),
 }));

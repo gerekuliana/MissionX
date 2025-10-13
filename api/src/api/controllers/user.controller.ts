@@ -11,6 +11,7 @@ import {
     HttpStatus,
     Inject,
     ForbiddenException,
+    Query,
 } from '@nestjs/common';
 
 import {
@@ -41,6 +42,7 @@ import {
     ApiUnauthorizedResponse,
     ApiForbiddenResponse,
     ApiNotFoundResponse,
+    ApiQuery,
 } from '@nestjs/swagger';
 
 interface RequestingUserContext {
@@ -116,6 +118,12 @@ export class UserController {
         summary: 'Get all users',
         description: 'Retrieves all users based on role permissions',
     })
+    @ApiQuery({ name: 'name', required: false, description: 'Filter by user name' })
+    @ApiQuery({
+        name: 'tenantId',
+        required: false,
+        description: 'Filter by tenant ID (Super Admins only)',
+    })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'List of users retrieved successfully',
@@ -123,16 +131,20 @@ export class UserController {
     })
     @ApiUnauthorizedResponse({ description: 'Unauthorized' })
     @ApiForbiddenResponse({ description: 'Forbidden - missing tenant information' })
-    async findAll(@Req() req: RequestWithTenant): Promise<UserDto[]> {
-        const { tenantId, isSuperAdmin }: RequestingUserContext =
+    async findAll(
+        @Req() req: RequestWithTenant,
+        @Query('name') name?: string,
+        @Query('tenantId') tenantId?: string,
+    ): Promise<UserDto[]> {
+        const { tenantId: userTenantId, isSuperAdmin }: RequestingUserContext =
             this._getRequestingUserContext(req);
 
         if (isSuperAdmin) {
-            return this.userQueries.findAllUsers();
+            return this.userQueries.findAllUsers(name, tenantId);
         }
 
-        if (tenantId !== undefined) {
-            return this.userQueries.findAllUsersByTenant(tenantId);
+        if (userTenantId !== undefined) {
+            return this.userQueries.findAllUsersByTenant(userTenantId, name);
         }
 
         throw new ForbiddenException('User tenant information is missing.');
