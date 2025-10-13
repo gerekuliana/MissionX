@@ -16,6 +16,10 @@ interface UserManagementState {
   roleFilter: string;
   statusFilter: StatusFilter;
 
+  // Pagination state
+  page: number;
+  rowsPerPage: number;
+
   openCreateForm: () => void;
   openEditForm: (user: User) => void;
   closeForm: () => void;
@@ -27,6 +31,10 @@ interface UserManagementState {
   openConfirmToggleStatusDialog: (user: User) => void;
   closeConfirmToggleStatusDialog: () => void;
   resetToggleStatusState: () => void;
+
+  // Pagination actions
+  setPage: (page: number) => void;
+  setRowsPerPage: (rows: number) => void;
 
   // Filter actions
   setEmailFilter: (email: string) => void;
@@ -49,6 +57,10 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
   roleFilter: '',
   statusFilter: 'all',
 
+  // Pagination initial state
+  page: 0,
+  rowsPerPage: 10,
+
   openCreateForm: (): void => set({ isFormOpen: true, selectedUser: null }),
   openEditForm: (user: User): void => set({ isFormOpen: true, selectedUser: user }),
   closeForm: (): void => set({ isFormOpen: false, selectedUser: null }),
@@ -66,10 +78,14 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
   resetToggleStatusState: (): void =>
     set({ isConfirmToggleStatusDialogOpen: false, userToToggleStatus: null }),
 
+  // Pagination actions
+  setPage: (page: number): void => set({ page }),
+  setRowsPerPage: (rows: number): void => set({ rowsPerPage: rows, page: 0 }),
+
   // Filter actions
-  setEmailFilter: (email: string): void => set({ emailFilter: email }),
-  setRoleFilter: (role: string): void => set({ roleFilter: role }),
-  setStatusFilter: (status: StatusFilter): void => set({ statusFilter: status }),
+  setEmailFilter: (email: string): void => set({ emailFilter: email.trim(), page: 0 }),
+  setRoleFilter: (role: string): void => set({ roleFilter: role, page: 0 }),
+  setStatusFilter: (status: StatusFilter): void => set({ statusFilter: status, page: 0 }),
   clearFilters: (): void =>
-    set({ emailFilter: '', roleFilter: '', statusFilter: 'all' }),
+    set({ emailFilter: '', roleFilter: '', statusFilter: 'all', page: 0 }),
 }));
