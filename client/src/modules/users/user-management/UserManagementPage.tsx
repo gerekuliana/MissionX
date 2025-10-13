@@ -24,6 +24,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   TextField,
   Tooltip,
   Typography,
@@ -80,6 +81,8 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     emailFilter,
     roleFilter,
     statusFilter,
+    page,
+    rowsPerPage,
     openCreateForm,
     openEditForm,
     closeForm,
@@ -92,6 +95,8 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     setEmailFilter,
     setRoleFilter,
     setStatusFilter,
+    setPage,
+    setRowsPerPage,
     clearFilters,
   } = useUserManagementStore();
 
@@ -130,11 +135,10 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
   const filteredUsers = useMemo(() => {
     let result = [...users];
 
-    // Filter by email
+    // Filter by email (prefix, case-insensitive)
     if (emailFilter) {
-      result = result.filter((user) =>
-        user.email.toLowerCase().includes(emailFilter.toLowerCase()),
-      );
+      const prefix = emailFilter.trim().toLowerCase();
+      result = result.filter((user) => user.email.toLowerCase().startsWith(prefix));
     }
 
     // Filter by role
@@ -153,6 +157,12 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
 
     return result;
   }, [users, emailFilter, roleFilter, statusFilter]);
+
+  const paginatedUsers = useMemo(() => {
+    const start = page * rowsPerPage;
+    const end = start + rowsPerPage;
+    return filteredUsers.slice(start, end);
+  }, [filteredUsers, page, rowsPerPage]);
 
   const hasActiveFilters = emailFilter || roleFilter || statusFilter !== 'all';
 
@@ -362,7 +372,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                       </TableCell>
                     </TableRow>
                   )}
-                  {filteredUsers.map((user) => (
+                  {paginatedUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell component="th" scope="row">
                         {user.email}
@@ -417,6 +427,19 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+          )}
+          {!isLoading && filteredUsers.length > 0 && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', px: 2, py: 1 }}>
+              <TablePagination
+                component="div"
+                count={filteredUsers.length}
+                page={page}
+                onPageChange={(_e, newPage) => setPage(newPage)}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
+                rowsPerPageOptions={[10, 25, 50]}
+              />
+            </Box>
           )}
         </CardContent>
       </Card>
