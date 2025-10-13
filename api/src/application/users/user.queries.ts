@@ -50,14 +50,36 @@ export class UserQueries implements IUserQueries {
         return dto;
     }
 
-    async findAllUsersByTenant(tenantId: string): Promise<UserDto[]> {
-        const users = await this.userRepository.findAllByTenantId(tenantId);
+    async findAllUsersByTenant(tenantId: string, name?: string): Promise<UserDto[]> {
+        let users = await this.userRepository.findAllByTenantId(tenantId);
+
+        if (name) {
+            const lowerCaseName = name.toLowerCase();
+            users = users.filter(
+                (user) =>
+                    user.firstName?.toLowerCase().includes(lowerCaseName) ||
+                    user.lastName?.toLowerCase().includes(lowerCaseName),
+            );
+        }
 
         return users.map((user) => this.mapToDto(user)).filter(Boolean) as UserDto[];
     }
 
-    async findAllUsers(): Promise<UserDto[]> {
-        const users = await this.userRepository.findAll();
+    async findAllUsers(name?: string, tenantId?: string): Promise<UserDto[]> {
+        let users = await this.userRepository.findAll();
+
+        if (tenantId) {
+            users = users.filter((user) => user.tenantId === tenantId);
+        }
+
+        if (name) {
+            const lowerCaseName = name.toLowerCase();
+            users = users.filter(
+                (user) =>
+                    user.firstName?.toLowerCase().includes(lowerCaseName) ||
+                    user.lastName?.toLowerCase().includes(lowerCaseName),
+            );
+        }
 
         return users.map((user) => this.mapToDto(user)).filter(Boolean) as UserDto[];
     }
