@@ -13,7 +13,6 @@ interface UserManagementState {
 
   // Filter states
   emailFilter: string;
-  roleFilter: string;
   statusFilter: StatusFilter;
 
   openCreateForm: () => void;
@@ -30,7 +29,6 @@ interface UserManagementState {
 
   // Filter actions
   setEmailFilter: (email: string) => void;
-  setRoleFilter: (role: string) => void;
   setStatusFilter: (status: StatusFilter) => void;
   clearFilters: () => void;
 }
@@ -46,7 +44,6 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
 
   // Filter initial states
   emailFilter: '',
-  roleFilter: '',
   statusFilter: 'all',
 
   openCreateForm: (): void => set({ isFormOpen: true, selectedUser: null }),
@@ -68,8 +65,6 @@ export const useUserManagementStore = create<UserManagementState>((set) => ({
 
   // Filter actions
   setEmailFilter: (email: string): void => set({ emailFilter: email }),
-  setRoleFilter: (role: string): void => set({ roleFilter: role }),
   setStatusFilter: (status: StatusFilter): void => set({ statusFilter: status }),
-  clearFilters: (): void =>
-    set({ emailFilter: '', roleFilter: '', statusFilter: 'all' }),
+  clearFilters: (): void => set({ emailFilter: '', statusFilter: 'all' }),
 }));

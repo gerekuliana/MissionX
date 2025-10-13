@@ -78,7 +78,6 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     isConfirmToggleStatusDialogOpen,
     userToToggleStatus,
     emailFilter,
-    roleFilter,
     statusFilter,
     openCreateForm,
     openEditForm,
@@ -90,7 +89,6 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     closeConfirmToggleStatusDialog,
     resetToggleStatusState,
     setEmailFilter,
-    setRoleFilter,
     setStatusFilter,
     clearFilters,
   } = useUserManagementStore();
@@ -115,17 +113,6 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
 
   const users = useMemo(() => usersData?.data ?? [], [usersData]);
 
-  // Get unique roles for filter dropdown
-  const availableRoles = useMemo(() => {
-    const rolesSet = new Set<string>();
-    users.forEach((user) => {
-      user.roles.forEach((role) => {
-        rolesSet.add(role.name);
-      });
-    });
-    return Array.from(rolesSet).sort();
-  }, [users]);
-
   // Apply client-side filtering
   const filteredUsers = useMemo(() => {
     let result = [...users];
@@ -137,13 +124,6 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
       );
     }
 
-    // Filter by role
-    if (roleFilter) {
-      result = result.filter((user) =>
-        user.roles.some((role) => role.name === roleFilter),
-      );
-    }
-
     // Filter by status
     if (statusFilter !== 'all') {
       result = result.filter((user) =>
@@ -152,9 +132,9 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
     }
 
     return result;
-  }, [users, emailFilter, roleFilter, statusFilter]);
+  }, [users, emailFilter, statusFilter]);
 
-  const hasActiveFilters = emailFilter || roleFilter || statusFilter !== 'all';
+  const hasActiveFilters = emailFilter || statusFilter !== 'all';
 
   const { mutateAsync: removeUserMutate, isPending: isDeleting } = useMutation({
     mutationFn: deleteUser,
@@ -286,28 +266,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = () => {
                     </TableCell>
                     <TableCell>Name</TableCell>
                     {isSuperAdmin && <TableCell>Tenant</TableCell>}
-                    <TableCell>
-                      <Stack spacing={1}>
-                        <Typography variant="body2">Roles</Typography>
-                        <FormControl size="small" sx={{ minWidth: 120 }}>
-                          <Select
-                            value={roleFilter}
-                            onChange={(e: SelectChangeEvent) => setRoleFilter(e.target.value)}
-                            displayEmpty
-                            sx={{
-                              backgroundColor: theme.palette.background.default,
-                            }}
-                          >
-                            <MenuItem value="">All Roles</MenuItem>
-                            {availableRoles.map((role) => (
-                              <MenuItem key={role} value={role}>
-                                {role}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Stack>
-                    </TableCell>
+                    <TableCell>Roles</TableCell>
                     <TableCell>
                       <Stack spacing={1}>
                         <Typography variant="body2">Status</Typography>
