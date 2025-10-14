@@ -1,14 +1,13 @@
 import { createTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import { BRAND_PRIMARY } from './brand';
 
 // Material UI default dark theme (dark gray #121212)
 export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#90CAF9',
-      light: '#B3E5FC',
-      dark: '#42A5F5',
-      contrastText: '#000000',
+      main: BRAND_PRIMARY,
     },
     secondary: {
       main: '#9CA3AF',
@@ -79,19 +78,13 @@ export const darkTheme = createTheme({
             transform: 'translateY(-1px)',
           },
         },
-        contained: {
-          backgroundColor: '#90CAF9',
-          color: '#000000',
-          '&:hover': {
-            backgroundColor: '#42A5F5',
-          },
-        },
+        contained: {},
         outlined: {
           borderColor: 'rgba(255, 255, 255, 0.23)',
-          color: '#90CAF9',
+          color: BRAND_PRIMARY,
           '&:hover': {
-            borderColor: '#90CAF9',
-            backgroundColor: 'rgba(144, 202, 249, 0.08)',
+            borderColor: BRAND_PRIMARY,
+            backgroundColor: alpha(BRAND_PRIMARY, 0.08),
           },
         },
       },
@@ -100,7 +93,7 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#90CAF9',
+            borderColor: BRAND_PRIMARY,
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: 'rgba(255, 255, 255, 0.23)',
@@ -112,10 +105,10 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-selected': {
-            backgroundColor: 'rgba(144, 202, 249, 0.16)',
+            backgroundColor: alpha(BRAND_PRIMARY, 0.16),
           },
           '&.Mui-selected:hover': {
-            backgroundColor: 'rgba(144, 202, 249, 0.24)',
+            backgroundColor: alpha(BRAND_PRIMARY, 0.24),
           },
           '&:hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -174,7 +167,7 @@ export const darkTheme = createTheme({
               borderColor: 'rgba(255, 255, 255, 0.4)',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#90CAF9',
+              borderColor: BRAND_PRIMARY,
             },
           },
         },
