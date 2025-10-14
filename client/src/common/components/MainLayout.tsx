@@ -23,6 +23,7 @@ import CustomUserButton from './CustomUserButton';
 import useUserRoles from '../hooks/useUserRoles';
 import { ROLES } from '../constants/roles';
 import InvoiceFileUpload from '../../modules/invoices/components/InvoiceFileUpload';
+import CookieBanner from './CookieBanner';
 
 const drawerWidth = 240;
 
@@ -200,6 +201,8 @@ const MainLayout: React.FC = () => {
           </Typography>
         </Container>
       </Box>
+
+      <CookieBanner />
     </Box>
   );
 };
