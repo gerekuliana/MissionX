@@ -1,13 +1,12 @@
 import { createTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import { BRAND_PRIMARY } from './brand';
 
 export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976D2',
-      light: '#42A5F5',
-      dark: '#1565C0',
-      contrastText: '#FFFFFF',
+      main: BRAND_PRIMARY,
     },
     secondary: {
       main: '#6B7280',
@@ -86,8 +85,8 @@ export const lightTheme = createTheme({
         outlined: {
           borderColor: 'rgba(0, 0, 0, 0.23)',
           '&:hover': {
-            borderColor: '#1976D2',
-            backgroundColor: 'rgba(25, 118, 210, 0.04)',
+            borderColor: BRAND_PRIMARY,
+            backgroundColor: alpha(BRAND_PRIMARY, 0.04),
           },
         },
       },
@@ -96,7 +95,7 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#1976D2',
+            borderColor: BRAND_PRIMARY,
           },
         },
       },
@@ -105,10 +104,10 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-selected': {
-            backgroundColor: 'rgba(25, 118, 210, 0.08)',
+            backgroundColor: alpha(BRAND_PRIMARY, 0.08),
           },
           '&.Mui-selected:hover': {
-            backgroundColor: 'rgba(25, 118, 210, 0.12)',
+            backgroundColor: alpha(BRAND_PRIMARY, 0.12),
           },
         },
       },
@@ -154,7 +153,7 @@ export const lightTheme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-              borderColor: '#1976D2',
+              borderColor: BRAND_PRIMARY,
             },
           },
         },
