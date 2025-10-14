@@ -11,8 +11,8 @@ function App() {
       </SignedOut>
       <SignedIn>
         <AppRoutes />
-        <CookieBanner />
       </SignedIn>
+      <CookieBanner />
     </>
   );
 }
