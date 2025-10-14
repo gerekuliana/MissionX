@@ -6,23 +6,28 @@ import {
   Button,
   Container,
   Stack,
-  Link,
   Slide,
+  FormGroup,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import { cookieManager } from '../utils/cookieManager';
 
 const CookieBanner: React.FC = () => {
   const [showBanner, setShowBanner] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [functional, setFunctional] = useState<boolean>(() => cookieManager.getPreferences()?.functional ?? true);
+  const [analytics, setAnalytics] = useState<boolean>(() => cookieManager.getPreferences()?.analytics ?? true);
+  const [thirdParty, setThirdParty] = useState<boolean>(() => cookieManager.getPreferences()?.thirdParty ?? true);
 
   useEffect(() => {
     const hasConsented = cookieManager.hasUserConsented();
     if (!hasConsented) {
       setShowBanner(true);
-      cookieManager.blockNonEssentialCookies();
     } else {
       const preferences = cookieManager.getPreferences();
       if (preferences?.consent === 'accepted') {
-        cookieManager.allowAllCookies();
+        cookieManager.applyPreferences(preferences);
       } else if (preferences?.consent === 'declined') {
         cookieManager.blockNonEssentialCookies();
       }
@@ -38,6 +43,15 @@ const CookieBanner: React.FC = () => {
   const handleDecline = () => {
     cookieManager.savePreferences('declined');
     cookieManager.blockNonEssentialCookies();
+    setShowBanner(false);
+  };
+
+  const handleSavePreferences = () => {
+    cookieManager.saveCategoryPreferences({
+      functional,
+      analytics,
+      thirdParty,
+    });
     setShowBanner(false);
   };
 
@@ -72,14 +86,6 @@ const CookieBanner: React.FC = () => {
                 We use cookies to enhance your experience, analyze site traffic, and serve personalized content.
                 This includes essential cookies for authentication (Clerk), functional cookies for site features,
                 analytics cookies for usage insights, and third-party cookies for enhanced functionality.
-                {' '}
-                <Link
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
-                  sx={{ color: 'primary.main', textDecoration: 'underline' }}
-                >
-                  Learn more
-                </Link>
               </Typography>
             </Box>
             <Stack
@@ -104,6 +110,14 @@ const CookieBanner: React.FC = () => {
                 Decline
               </Button>
               <Button
+                variant="text"
+                onClick={() => setShowPreferences((prev) => !prev)}
+                size="large"
+                sx={{ minWidth: 120 }}
+              >
+                Preferences
+              </Button>
+              <Button
                 variant="contained"
                 onClick={handleAcceptAll}
                 size="large"
@@ -120,6 +134,47 @@ const CookieBanner: React.FC = () => {
               </Button>
             </Stack>
           </Stack>
+          {showPreferences && (
+            <Box mt={3}>
+              <FormGroup row>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={functional}
+                      onChange={(e) => setFunctional(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Functional cookies"
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={analytics}
+                      onChange={(e) => setAnalytics(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Analytics cookies"
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={thirdParty}
+                      onChange={(e) => setThirdParty(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Third-party cookies"
+                />
+              </FormGroup>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 2 }}>
+                <Button variant="contained" onClick={handleSavePreferences} size="large">
+                  Save Preferences
+                </Button>
+              </Stack>
+            </Box>
+          )}
         </Container>
       </Paper>
     </Slide>

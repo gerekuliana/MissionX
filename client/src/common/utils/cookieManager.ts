@@ -77,6 +77,42 @@ export const cookieManager = {
     }
   },
 
+  applyPreferences(preferencesParam?: CookiePreferences): void {
+    const preferences = preferencesParam ?? this.getPreferences();
+    if (!preferences) return;
+
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('consent', 'update', {
+        'analytics_storage': preferences.analytics ? 'granted' : 'denied',
+        'ad_storage': preferences.thirdParty ? 'granted' : 'denied',
+        'functionality_storage': preferences.functional ? 'granted' : 'denied',
+        'personalization_storage': preferences.thirdParty ? 'granted' : 'denied',
+      });
+    }
+
+    if (preferences.consent === 'declined') {
+      this.blockNonEssentialCookies();
+      return;
+    }
+
+    if (!preferences.thirdParty) {
+      this.blockThirdPartyScripts();
+    }
+  },
+
+  saveCategoryPreferences(prefs: { functional: boolean; analytics: boolean; thirdParty: boolean }): void {
+    const preferences: CookiePreferences = {
+      consent: 'accepted',
+      timestamp: new Date().toISOString(),
+      functional: prefs.functional,
+      analytics: prefs.analytics,
+      thirdParty: prefs.thirdParty,
+    };
+
+    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(preferences));
+    this.applyPreferences(preferences);
+  },
+
   blockThirdPartyScripts(): void {
     const blockedDomains = [
       'google-analytics.com',
