@@ -105,8 +105,8 @@ const TenantManagementPage: React.FC<TenantManagementPageProps> = () => {
               variant="contained"
               onClick={openCreateForm}
               sx={{
-                backgroundColor: theme.palette.primary.main,
-                '&:hover': { backgroundColor: theme.palette.primary.dark },
+                backgroundColor: '#E91E63',
+                '&:hover': { backgroundColor: '#C2185B' },
               }}>
               + Add Tenant
             </Button>
