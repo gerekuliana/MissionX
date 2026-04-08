@@ -4,9 +4,9 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976D2',
-      light: '#42A5F5',
-      dark: '#1565C0',
+      main: '#2E7D32',
+      light: '#4CAF50',
+      dark: '#1B5E20',
       contrastText: '#FFFFFF',
     },
     secondary: {
@@ -86,8 +86,8 @@ export const lightTheme = createTheme({
         outlined: {
           borderColor: 'rgba(0, 0, 0, 0.23)',
           '&:hover': {
-            borderColor: '#1976D2',
-            backgroundColor: 'rgba(25, 118, 210, 0.04)',
+            borderColor: '#2E7D32',
+            backgroundColor: 'rgba(46, 125, 50, 0.04)',
           },
         },
       },
@@ -96,7 +96,7 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#1976D2',
+            borderColor: '#2E7D32',
           },
         },
       },
@@ -105,10 +105,10 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-selected': {
-            backgroundColor: 'rgba(25, 118, 210, 0.08)',
+            backgroundColor: 'rgba(46, 125, 50, 0.08)',
           },
           '&.Mui-selected:hover': {
-            backgroundColor: 'rgba(25, 118, 210, 0.12)',
+            backgroundColor: 'rgba(46, 125, 50, 0.12)',
           },
         },
       },
@@ -154,7 +154,7 @@ export const lightTheme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-              borderColor: '#1976D2',
+              borderColor: '#2E7D32',
             },
           },
         },
