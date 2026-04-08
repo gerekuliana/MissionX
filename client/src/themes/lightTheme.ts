@@ -1,41 +1,83 @@
-import { createTheme } from '@mui/material';
+import { createTheme, Theme } from '@mui/material';
 
-export const lightTheme = createTheme({
+/**
+ * Validates if a string is a valid hex color code
+ */
+const isValidHexColor = (color: string): boolean => {
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{8})$/.test(color);
+};
+
+/**
+ * Validates if a string is a valid RGBA color
+ */
+const isValidRgbaColor = (color: string): boolean => {
+  return /^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(,\s*[\d.]+\s*)?\)$/.test(color);
+};
+
+/**
+ * Validates color value and returns it or a fallback
+ */
+const validateColor = (color: string, fallback: string): string => {
+  try {
+    if (!color || typeof color !== 'string') {
+      console.warn(`Invalid color value: ${color}, using fallback: ${fallback}`);
+      return fallback;
+    }
+    if (isValidHexColor(color) || isValidRgbaColor(color)) {
+      return color;
+    }
+    console.warn(`Invalid color format: ${color}, using fallback: ${fallback}`);
+    return fallback;
+  } catch (error) {
+    console.error(`Error validating color: ${error}`, { color, fallback });
+    return fallback;
+  }
+};
+
+// Primary button colors (dark green)
+const PRIMARY_COLORS = {
+  main: validateColor('#2E7D32', '#1976d2'),
+  light: validateColor('#4CAF50', '#42a5f5'),
+  dark: validateColor('#1B5E20', '#1565c0'),
+  contrastText: validateColor('#FFFFFF', '#FFFFFF'),
+};
+
+/**
+ * Creates the light theme with error handling
+ */
+const createLightTheme = (): Theme => {
+  try {
+    return createTheme({
   palette: {
     mode: 'light',
-    primary: {
-      main: '#2E7D32',
-      light: '#4CAF50',
-      dark: '#1B5E20',
-      contrastText: '#FFFFFF',
-    },
+    primary: PRIMARY_COLORS,
     secondary: {
-      main: '#6B7280',
-      light: '#9CA3AF',
-      dark: '#4B5563',
-      contrastText: '#FFFFFF',
+      main: validateColor('#6B7280', '#6B7280'),
+      light: validateColor('#9CA3AF', '#9CA3AF'),
+      dark: validateColor('#4B5563', '#4B5563'),
+      contrastText: validateColor('#FFFFFF', '#FFFFFF'),
     },
     background: {
-      default: '#F5F5F5',
-      paper: '#FFFFFF',
+      default: validateColor('#F5F5F5', '#F5F5F5'),
+      paper: validateColor('#FFFFFF', '#FFFFFF'),
     },
     text: {
-      primary: '#1F2937',
-      secondary: '#6B7280',
+      primary: validateColor('#1F2937', '#1F2937'),
+      secondary: validateColor('#6B7280', '#6B7280'),
     },
     error: {
-      main: '#EF4444',
+      main: validateColor('#EF4444', '#f44336'),
     },
     warning: {
-      main: '#F59E0B',
+      main: validateColor('#F59E0B', '#ff9800'),
     },
     info: {
-      main: '#3B82F6',
+      main: validateColor('#3B82F6', '#2196f3'),
     },
     success: {
-      main: '#10B981',
+      main: validateColor('#10B981', '#4caf50'),
     },
-    divider: 'rgba(0, 0, 0, 0.12)',
+    divider: validateColor('rgba(0, 0, 0, 0.12)', 'rgba(0, 0, 0, 0.12)'),
   },
   typography: {
     fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
@@ -84,10 +126,10 @@ export const lightTheme = createTheme({
           },
         },
         outlined: {
-          borderColor: 'rgba(0, 0, 0, 0.23)',
+          borderColor: validateColor('rgba(0, 0, 0, 0.23)', 'rgba(0, 0, 0, 0.23)'),
           '&:hover': {
-            borderColor: '#2E7D32',
-            backgroundColor: 'rgba(46, 125, 50, 0.04)',
+            borderColor: PRIMARY_COLORS.main,
+            backgroundColor: validateColor('rgba(46, 125, 50, 0.04)', 'rgba(46, 125, 50, 0.04)'),
           },
         },
       },
@@ -96,7 +138,7 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#2E7D32',
+            borderColor: PRIMARY_COLORS.main,
           },
         },
       },
@@ -105,10 +147,10 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-selected': {
-            backgroundColor: 'rgba(46, 125, 50, 0.08)',
+            backgroundColor: validateColor('rgba(46, 125, 50, 0.08)', 'rgba(46, 125, 50, 0.08)'),
           },
           '&.Mui-selected:hover': {
-            backgroundColor: 'rgba(46, 125, 50, 0.12)',
+            backgroundColor: validateColor('rgba(46, 125, 50, 0.12)', 'rgba(46, 125, 50, 0.12)'),
           },
         },
       },
@@ -154,7 +196,7 @@ export const lightTheme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-              borderColor: '#2E7D32',
+              borderColor: PRIMARY_COLORS.main,
             },
           },
         },
@@ -167,5 +209,36 @@ export const lightTheme = createTheme({
         },
       },
     },
-  },
-});
+  });
+  } catch (error) {
+    console.error('Error creating light theme:', error);
+    // Return a minimal fallback theme in case of error
+    return createTheme({
+      palette: {
+        mode: 'light',
+        primary: {
+          main: '#1976d2',
+          contrastText: '#FFFFFF',
+        },
+      },
+    });
+  }
+};
+
+/**
+ * Light theme with primary button colors set to dark green
+ * Includes error handling and color validation
+ */
+export const lightTheme = (() => {
+  try {
+    return createLightTheme();
+  } catch (error) {
+    console.error('Fatal error creating light theme, using emergency fallback:', error);
+    // Emergency fallback - create absolute minimal theme
+    return createTheme({
+      palette: {
+        mode: 'light',
+      },
+    });
+  }
+})();
